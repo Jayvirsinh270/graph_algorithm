@@ -1,1 +1,2 @@
-to run this download find .zip file. click on it  on it file and extract it and then open folder you get you see an file name index.html open it in chrome and you are on website 
+to run this download find .zip file. click on the name of file file name is graph_algo.zip click on it you can see an new page at the new page you can easily find an download icon download it. after downloading extract it and then open folder you get you see an file name index.html open it in chrome and you are on website 
+or you can also download it by using code button tape on it an you see an download on .zip and then extract it and you are good to go 
