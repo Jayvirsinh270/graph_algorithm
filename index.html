@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>GraphAlgo — Home</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    /* Hero 3D canvas */
+    .hero-viz {
+      position:relative; width:100%; height:240px;
+      border-radius:var(--r); overflow:hidden; margin-bottom:2rem;
+      background:linear-gradient(135deg,rgba(237,233,254,.6),rgba(252,228,236,.5),rgba(224,242,254,.6));
+      border:1.5px solid var(--glass-border);
+      box-shadow:0 10px 40px rgba(139,92,246,.15);
+    }
+    .hero-viz canvas { display:block; width:100%!important; height:100%!important; }
+    .hero-viz-label {
+      position:absolute; bottom:.8rem; left:50%; transform:translateX(-50%);
+      font-size:.62rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; color:rgba(107,114,128,.55);
+      white-space:nowrap; pointer-events:none;
+      background:rgba(255,255,255,.7); padding:.2rem .8rem; border-radius:100px;
+    }
+    /* stat cards gradient numbers */
+    .stat-big {
+      font-size:2rem; font-weight:900; line-height:1;
+      background:var(--grad-pink); -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .stat-big.sb-purple { background:var(--grad-pink); }
+    .stat-big.sb-cyan   { background:var(--grad-blue); }
+    .stat-big.sb-green  { background:var(--grad-green); }
+    /* algo nav cards */
+    .algo-card {
+      display:block; cursor:pointer; text-decoration:none;
+      border-radius:var(--r); padding:1.8rem;
+      background:var(--white); border:1.5px solid var(--glass-border);
+      box-shadow:0 6px 24px var(--shadow);
+      transition:transform var(--tr-spring), box-shadow var(--tr);
+      position:relative; overflow:hidden;
+    }
+    .algo-card::after {
+      content:''; position:absolute; inset:0;
+      background:var(--grad-pink); opacity:0;
+      transition:opacity var(--tr);
+    }
+    .algo-card:hover { transform:translateY(-6px) scale(1.012); box-shadow:0 18px 52px var(--shadow-lg); }
+    .algo-card .ac-arrow {
+      position:absolute; right:1.2rem; top:1.2rem;
+      font-size:.9rem; opacity:.25; transition:all var(--tr);
+    }
+    .algo-card:hover .ac-arrow { opacity:.7; transform:translate(3px,-3px); }
+    /* pulse ring on emoji */
+    .pulse-ring {
+      display:inline-block; position:relative;
+    }
+    .pulse-ring::before {
+      content:''; position:absolute; inset:-8px;
+      border-radius:50%; border:2px solid currentColor;
+      opacity:0; animation:pulseRing 2.4s ease-out infinite;
+    }
+    @keyframes pulseRing {
+      0%{ transform:scale(.8); opacity:.6; }
+      100%{ transform:scale(1.6); opacity:0; }
+    }
+    /* Reference table links */
+    .ref-link { color:var(--cyan); text-decoration:underline; }
+    .ref-link:hover { color:var(--pink); }
+  </style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle"><span></span><span></span><span></span></button>
+
+<div class="app-wrapper">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-icon">⬡</div>
+    <div><div class="sidebar-brand-name">GraphAlgo<span class="sidebar-brand-dot">.</span></div></div>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar">CJ</div>
+    <div>
+      <div class="sidebar-user-name">Chauhan Jayvirsinh</div>
+      <div class="sidebar-user-role">Enro · 240503030003</div>
+    </div>
+  </div>
+  <div class="sidebar-nav-label">Navigation</div>
+  <ul class="sidebar-nav">
+    <li class="active"><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
+    <li><a href="graphs.html"><span class="nav-icon">📖</span> Graph Types</a></li>
+    <li><a href="bfs.html"><span class="nav-icon">🔵</span> BFS</a></li>
+    <li><a href="dfs.html"><span class="nav-icon">🟣</span> DFS</a></li>
+    <li><a href="dijkstra.html"><span class="nav-icon">🔷</span> Dijkstra's</a></li>
+    <li><a href="compare.html"><span class="nav-icon">📊</span> Compare &amp; Analysis</a></li>
+  </ul>
+  <div class="sidebar-nav-label">On this page</div>
+  <ul class="sidebar-nav">
+    <li><a href="#home"><span class="nav-icon">🏠</span> Hero</a></li>
+    <li><a href="#abstract"><span class="nav-icon">📄</span> Abstract</a></li>
+    <li><a href="#research"><span class="nav-icon">🔬</span> Research Trends</a></li>
+    <li><a href="#references"><span class="nav-icon">📚</span> References</a></li>
+  </ul>
+  <div class="sidebar-footer">
+    <div class="sf-emoji">🎓</div>
+    <div class="sf-title">DAA Active Learning</div>
+    <div class="sf-sub">Review Paper · 2024</div>
+  </div>
+</aside>
+
+<main class="main-content">
+
+  <!-- HERO -->
+  <section id="home" class="section" style="padding-top:0">
+    <div class="page-header reveal">
+      <div class="page-badge badge-pink">📄 DAA Active Learning Activity</div>
+      <h1 class="page-title">Graph Algorithms</h1>
+      <p class="page-subtitle">A comprehensive interactive guide to <strong>BFS</strong>, <strong>DFS</strong>, and <strong>Dijkstra's Algorithm</strong> — from first principles to research frontiers. Includes 3D live visualizers, worked examples, and complexity analysis.</p>
+      <p style="font-size:.8rem;color:var(--text-muted);margin-top:.6rem">Chauhan Jayvirsinh &nbsp;·&nbsp; Enro: 240503030003</p>
+      <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.4rem">
+        <a href="bfs.html"     class="btn btn-pink">Start Learning →</a>
+        <a href="graphs.html"  class="btn btn-outline">Graph Types</a>
+        <a href="compare.html" class="btn btn-outline">Compare All</a>
+      </div>
+    </div>
+
+    <!-- 3D ANIMATED PARTICLE GRAPH -->
+    <div class="hero-viz reveal">
+      <canvas id="heroCanvas"></canvas>
+      <span class="hero-viz-label">Live 3D Graph Simulation — nodes floating in space</span>
+    </div>
+
+    <!-- stat cards -->
+    <div class="grid-4 reveal stagger" style="margin-bottom:2.5rem">
+      <div class="card-sm" style="border-left:4px solid var(--pink)">
+        <div class="stat-big">3</div>
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);font-weight:700;margin-top:.2rem">Core Algorithms</div>
+      </div>
+      <div class="card-sm" style="border-left:4px solid var(--purple)">
+        <div style="font-size:1.3rem;font-weight:900;color:var(--purple);font-family:var(--mono)">O(V+E)</div>
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);font-weight:700;margin-top:.2rem">BFS / DFS Time</div>
+      </div>
+      <div class="card-sm" style="border-left:4px solid var(--cyan)">
+        <div style="font-size:1.8rem;font-weight:900;color:var(--cyan)">6</div>
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);font-weight:700;margin-top:.2rem">Real-World Uses</div>
+      </div>
+      <div class="card-sm" style="border-left:4px solid var(--green)">
+        <div style="font-size:1.8rem;font-weight:900;color:var(--green)">3</div>
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);font-weight:700;margin-top:.2rem">Research Trends</div>
+      </div>
+    </div>
+
+    <!-- Algorithm nav cards -->
+    <div class="section-label reveal">Choose an Algorithm</div>
+    <div class="grid-3 reveal stagger" style="margin-bottom:2rem">
+      <a href="bfs.html" class="algo-card" style="border-top:4px solid #3b82f6">
+        <span class="ac-arrow">↗</span>
+        <div style="font-size:2.2rem;margin-bottom:.8rem" class="pulse-ring" style="color:#3b82f6">🔵</div>
+        <div style="font-size:1.05rem;font-weight:800;color:var(--text);margin-bottom:.35rem">Breadth-First Search</div>
+        <div style="font-size:.82rem;color:var(--text-sub);margin-bottom:.9rem;line-height:1.6">Explores level by level — like ripples in water. Guarantees shortest path in unweighted graphs.</div>
+        <div class="chip-row"><span class="chip chip-time">O(V+E)</span><span class="chip chip-space">FIFO Queue</span><span class="chip chip-green">Shortest Path</span></div>
+      </a>
+      <a href="dfs.html" class="algo-card" style="border-top:4px solid var(--purple)">
+        <span class="ac-arrow">↗</span>
+        <div style="font-size:2.2rem;margin-bottom:.8rem">🟣</div>
+        <div style="font-size:1.05rem;font-weight:800;color:var(--text);margin-bottom:.35rem">Depth-First Search</div>
+        <div style="font-size:.82rem;color:var(--text-sub);margin-bottom:.9rem;line-height:1.6">Dives deep before backtracking. Powers cycle detection, topological sort, and maze solving.</div>
+        <div class="chip-row"><span class="chip chip-time">O(V+E)</span><span class="chip chip-space">LIFO Stack</span></div>
+      </a>
+      <a href="dijkstra.html" class="algo-card" style="border-top:4px solid var(--cyan)">
+        <span class="ac-arrow">↗</span>
+        <div style="font-size:2.2rem;margin-bottom:.8rem">🔷</div>
+        <div style="font-size:1.05rem;font-weight:800;color:var(--text);margin-bottom:.35rem">Dijkstra's Algorithm</div>
+        <div style="font-size:.82rem;color:var(--text-sub);margin-bottom:.9rem;line-height:1.6">Greedy shortest-path on weighted graphs. Engine behind GPS, OSPF routing, and maps.</div>
+        <div class="chip-row"><span class="chip chip-cyan">O((V+E)logV)</span><span class="chip chip-space">Min-Heap</span></div>
+      </a>
+    </div>
+
+    <!-- Reference cards -->
+    <div class="grid-2 reveal stagger">
+      <a href="graphs.html" class="algo-card" style="border-top:4px solid var(--green)">
+        <span class="ac-arrow">↗</span>
+        <div style="font-size:1.8rem;margin-bottom:.6rem">📖</div>
+        <div style="font-size:1rem;font-weight:800;color:var(--text);margin-bottom:.3rem">Graph Types &amp; Terminology</div>
+        <div style="font-size:.83rem;color:var(--text-sub);line-height:1.6">Undirected, directed, weighted, cyclic, DAG, sparse, dense — with SVG diagrams and traversal walk-throughs.</div>
+      </a>
+      <a href="compare.html" class="algo-card" style="border-top:4px solid var(--orange)">
+        <span class="ac-arrow">↗</span>
+        <div style="font-size:1.8rem;margin-bottom:.6rem">📊</div>
+        <div style="font-size:1rem;font-weight:800;color:var(--text);margin-bottom:.3rem">Compare &amp; Complexity Analysis</div>
+        <div style="font-size:.83rem;color:var(--text-sub);line-height:1.6">Side-by-side complexity table, animated growth chart, BFS vs DFS vs Dijkstra decision guide.</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ABSTRACT -->
+  <section id="abstract" class="section">
+    <div class="section-label reveal">Abstract</div>
+    <div class="card reveal" style="border-left:4px solid var(--pink)">
+      <h2 class="section-title" style="margin-bottom:1rem">Overview of This Review</h2>
+      <p style="font-size:.95rem;color:var(--text-sub);line-height:1.95;margin-bottom:1rem">
+        A graph is a foundational <strong>non-linear data structure</strong> used to model relationships between connected objects.
+        Graph algorithms allow computational systems to analyse complex networks, perform efficient searches, and evaluate optimal paths.
+        This review covers three fundamental algorithms — <strong>BFS</strong>, <strong>DFS</strong>, and <strong>Dijkstra's</strong> — exploring
+        their mechanics, algorithmic steps, visual behaviours, and theoretical complexities.
+      </p>
+      <p style="font-size:.95rem;color:var(--text-sub);line-height:1.95">
+        Additionally, we analyse real-life applications across social networks and GPS routing, alongside recent
+        research directions including <strong>dynamic streaming graphs</strong> and <strong>Graph Neural Networks (GNNs)</strong>.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.2rem">
+        <span class="pill pill-pink">BFS</span><span class="pill pill-purple">DFS</span>
+        <span class="pill pill-cyan">Dijkstra</span><span class="pill pill-green">GNNs</span>
+        <span class="pill pill-orange">Streaming Graphs</span>
+        <span class="pill pill-blue">Graph Neural Networks</span>
+      </div>
+    </div>
+
+    <!-- Graph G=(V,E) intro -->
+    <div class="grid-2 reveal" style="margin-top:1.5rem">
+      <div class="callout callout-blue">
+        <div class="callout-icon">📐</div>
+        <div>
+          <div class="callout-title">What is a Graph? G = (V, E)</div>
+          <div class="callout-body">
+            A graph <code>G = (V, E)</code> consists of <strong>Vertices (nodes) V</strong> — points representing entities like cities or servers — and <strong>Edges E</strong> — links connecting pairs of nodes like highways or friendships. Graph operations primarily centre on <em>traversal</em> (visiting nodes systematically) and <em>pathfinding</em> (finding optimal routes).
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-purple">
+        <div class="callout-icon">🌐</div>
+        <div>
+          <div class="callout-title">Why Graphs?</div>
+          <div class="callout-body">
+            While linear data structures store elements sequentially, real-world systems are rarely linear. Internet connections, highway networks, and social interactions are deeply interconnected — and graphs are the <strong>natural language</strong> for representing these complex relationships.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH TRENDS -->
+  <section id="research" class="section">
+    <div class="section-label reveal">4. Recent Research Trends</div>
+    <h2 class="section-title reveal">Cutting-Edge Directions</h2>
+    <div class="grid-3 reveal stagger">
+      <div class="card-sm" style="border-top:3px solid var(--pink)">
+        <div style="font-size:1.5rem;margin-bottom:.6rem">⚡</div>
+        <h3 style="font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:.4rem">Dynamic Streaming Graphs</h3>
+        <p style="font-size:.82rem;color:var(--text-sub);line-height:1.7;margin-bottom:.7rem">Real-world graphs change constantly — transactions, social updates, sensor data. Incremental algorithms maintain shortest paths in <code style="font-family:var(--mono);font-size:.78rem;background:var(--pink-bg);color:var(--pink);padding:.1rem .35rem;border-radius:4px">O(log V)</code> time per update without restarting from scratch.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.3rem"><span class="pill pill-pink">Streaming</span><span class="pill pill-orange">Apache Flink</span><span class="pill pill-pink">Real-time</span></div>
+      </div>
+      <div class="card-sm" style="border-top:3px solid var(--purple)">
+        <div style="font-size:1.5rem;margin-bottom:.6rem">🌐</div>
+        <h3 style="font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:.4rem">Distributed Graph Processing</h3>
+        <p style="font-size:.82rem;color:var(--text-sub);line-height:1.7;margin-bottom:.7rem">Web-scale graphs (Facebook: 3B nodes, Google: trillions of edges) cannot fit in one machine. Apache Spark GraphX and Google Pregel partition computation across server clusters.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.3rem"><span class="pill pill-purple">Spark GraphX</span><span class="pill pill-blue">Pregel</span><span class="pill pill-purple">Big Data</span></div>
+      </div>
+      <div class="card-sm" style="border-top:3px solid var(--cyan)">
+        <div style="font-size:1.5rem;margin-bottom:.6rem">🧠</div>
+        <h3 style="font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:.4rem">Graph Neural Networks</h3>
+        <p style="font-size:.82rem;color:var(--text-sub);line-height:1.7;margin-bottom:.7rem">BFS-style message-passing meets deep learning in GCNs. Applied to drug discovery, fraud detection, protein structure prediction, and recommendation systems.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.3rem"><span class="pill pill-cyan">GCN</span><span class="pill pill-green">Drug Discovery</span><span class="pill pill-cyan">PyTorch Geo</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REFERENCES -->
+  <section id="references" class="section">
+    <div class="section-label reveal">6. References</div>
+    <h2 class="section-title reveal">Bibliography</h2>
+    <div class="table-wrap reveal">
+      <table>
+        <thead><tr><th>#</th><th>Reference</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:700;color:var(--pink)">1</td><td>Cormen, T. H., Leiserson, C. E., Rivest, R. L., &amp; Stein, C. (2022). <em>Introduction to Algorithms</em> (4th ed.). MIT Press.</td></tr>
+          <tr><td style="font-weight:700;color:var(--pink)">2</td><td>Dijkstra, E. W. (1959). A note on two problems in connexion with graphs. <em>Numerische Mathematik</em>, 1(1), 269–271.</td></tr>
+          <tr><td style="font-weight:700;color:var(--pink)">3</td><td>Kipf, T. N., &amp; Welling, M. (2017). Semi-supervised classification with graph convolutional networks. <em>ICLR 2017</em>.</td></tr>
+          <tr><td style="font-weight:700;color:var(--pink)">4</td><td>Malewicz, G., et al. (2010). Pregel: a system for large-scale graph processing. <em>ACM SIGMOD</em>, 581–592.</td></tr>
+          <tr><td style="font-weight:700;color:var(--pink)">5</td><td>Google Scholar — <a href="https://scholar.google.com" target="_blank" class="ref-link">scholar.google.com</a></td></tr>
+          <tr><td style="font-weight:700;color:var(--pink)">6</td><td>GeeksForGeeks — <a href="https://www.geeksforgeeks.org/dsa/graph-data-structure-and-algorithms/" target="_blank" class="ref-link">Graph Data Structure &amp; Algorithms</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="footer reveal">
+    <div class="footer-brand">⬡ <span>GraphAlgo</span></div>
+    <p>Chauhan Jayvirsinh · Enro: 240503030003 · DAA Active Learning Activity</p>
+    <p class="footer-made">Made with IBM Bob</p>
+  </footer>
+
+</main>
+</div>
+
+<script src="nav.js"></script>
+<script>
+/* ═══════════════════════════════════════════════
+   3D HERO PARTICLE GRAPH ANIMATION
+═══════════════════════════════════════════════ */
+(function(){
+  const canvas = document.getElementById('heroCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  let W, H, nodes, edges, animId;
+
+  const COLORS = ['#8b5cf6','#f43f8e','#06b6d4','#10b981','#6366f1','#f59e0b','#3b82f6'];
+  const N = 22;  // number of nodes
+  const CONNECT_DIST = 120;
+
+  function resize(){
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function initNodes(){
+    nodes = Array.from({length:N},(_,i)=>({
+      x: Math.random()*W, y: Math.random()*H,
+      vx:(Math.random()-.5)*0.55, vy:(Math.random()-.5)*0.55,
+      r: 5 + Math.random()*8,
+      color: COLORS[i % COLORS.length],
+      pulse: Math.random()*Math.PI*2,
+      pulseSpeed: 0.03 + Math.random()*0.02,
+      /* 3D depth simulation */
+      z: 0.4 + Math.random()*0.6,   // depth: 0.4 = far, 1.0 = close
+      vz:(Math.random()-.5)*0.002,
+    }));
+  }
+
+  function drawEdges(){
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const a=nodes[i], b=nodes[j];
+        const dx=a.x-b.x, dy=a.y-b.y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist < CONNECT_DIST){
+          const alpha = (1 - dist/CONNECT_DIST) * 0.25 * Math.min(a.z,b.z);
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = `rgba(139,92,246,${alpha.toFixed(3)})`;
+          ctx.lineWidth = 1.2 * Math.min(a.z,b.z);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function drawNodes(t){
+    nodes.forEach(n=>{
+      n.pulse += n.pulseSpeed;
+      const pr = n.r * n.z * (1 + 0.15*Math.sin(n.pulse));
+
+      /* outer glow */
+      const grd = ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,pr*3.5);
+      grd.addColorStop(0, n.color + '28');
+      grd.addColorStop(1, n.color + '00');
+      ctx.beginPath(); ctx.arc(n.x, n.y, pr*3.5, 0, Math.PI*2);
+      ctx.fillStyle = grd; ctx.fill();
+
+      /* node */
+      ctx.beginPath(); ctx.arc(n.x, n.y, pr, 0, Math.PI*2);
+      const fill = ctx.createRadialGradient(n.x-pr*.3,n.y-pr*.3,0,n.x,n.y,pr);
+      fill.addColorStop(0,'rgba(255,255,255,.85)');
+      fill.addColorStop(1, n.color + 'cc');
+      ctx.fillStyle = fill; ctx.fill();
+      ctx.strokeStyle = n.color + '99'; ctx.lineWidth = 1.5*n.z; ctx.stroke();
+    });
+  }
+
+  function update(){
+    nodes.forEach(n=>{
+      n.x += n.vx; n.y += n.vy;
+      n.z += n.vz;
+      if(n.z<0.35||n.z>1.0) n.vz *= -1;
+      if(n.x < 0||n.x > W) n.vx *= -1;
+      if(n.y < 0||n.y > H) n.vy *= -1;
+    });
+  }
+
+  function loop(t){
+    ctx.clearRect(0,0,W,H);
+    drawEdges();
+    drawNodes(t);
+    update();
+    animId = requestAnimationFrame(loop);
+  }
+
+  const ro = new ResizeObserver(()=>{ resize(); });
+  ro.observe(canvas.parentElement);
+  resize();
+  initNodes();
+  loop(0);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>GraphAlgo — Dijkstra's Algorithm</title>
+  <link rel="stylesheet" href="shared.css"/>
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle"><span></span><span></span><span></span></button>
+<div class="app-wrapper">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-icon">⬡</div>
+    <div><div class="sidebar-brand-name">GraphAlgo<span class="sidebar-brand-dot">.</span></div></div>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar">CJ</div>
+    <div>
+      <div class="sidebar-user-name">Chauhan Jayvirsinh</div>
+      <div class="sidebar-user-role">Enro · 240503030003</div>
+    </div>
+  </div>
+  <div class="sidebar-nav-label">Pages</div>
+  <ul class="sidebar-nav">
+    <li><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
+    <li><a href="graphs.html"><span class="nav-icon">📖</span> Graph Types</a></li>
+    <li><a href="bfs.html"><span class="nav-icon">🔵</span> BFS</a></li>
+    <li><a href="dfs.html"><span class="nav-icon">🟣</span> DFS</a></li>
+    <li class="active"><a href="dijkstra.html"><span class="nav-icon">🔷</span> Dijkstra's</a></li>
+    <li><a href="compare.html"><span class="nav-icon">📊</span> Compare</a></li>
+  </ul>
+  <div class="sidebar-nav-label">On this page</div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview"><span class="nav-icon">📌</span> Overview</a></li>
+    <li><a href="#intuition"><span class="nav-icon">💡</span> Intuition</a></li>
+    <li><a href="#relaxation"><span class="nav-icon">⚡</span> Edge Relaxation</a></li>
+    <li><a href="#steps"><span class="nav-icon">📋</span> Algorithm Steps</a></li>
+    <li><a href="#visualizer"><span class="nav-icon">▶️</span> Visualizer</a></li>
+    <li><a href="#worked-example"><span class="nav-icon">📊</span> Worked Example</a></li>
+    <li><a href="#code"><span class="nav-icon">💻</span> Code</a></li>
+    <li><a href="#limits"><span class="nav-icon">⚠️</span> Limitations</a></li>
+  </ul>
+  <div class="sidebar-footer">
+    <div class="sf-emoji">🔷</div>
+    <div class="sf-title">Dijkstra's</div>
+    <div class="sf-sub">Weighted Shortest Path</div>
+  </div>
+</aside>
+
+<main class="main-content">
+
+  <!-- HEADER -->
+  <div class="page-header reveal">
+    <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><span>Dijkstra's Algorithm</span></div>
+    <div class="page-badge badge-cyan">🔷 Algorithm 3 of 3</div>
+    <h1 class="page-title">Dijkstra's Algorithm</h1>
+    <p class="page-subtitle">Always expands the node with the <strong>smallest known distance</strong> from the source — a greedy approach that provably finds the shortest path in any graph with non-negative edge weights.</p>
+    <div class="chip-row">
+      <span class="chip chip-cyan">⏱ Time: O((V+E) log V)</span>
+      <span class="chip chip-space">📦 Space: O(V)</span>
+      <span class="chip chip-green">Non-negative weights</span>
+    </div>
+  </div>
+
+  <!-- Mini animated intro strip -->
+  <div class="reveal" style="position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(207,250,254,.5),rgba(165,243,252,.35));border:1.5px solid rgba(6,182,212,.18);border-radius:var(--r-md);padding:1.2rem 1.8rem;margin-bottom:2rem">
+    <div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap">
+      <div style="font-size:2.2rem;animation:pulseEmoji 3s ease-in-out infinite">🧭</div>
+      <div>
+        <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);margin-bottom:.2rem">Greedy Shortest Path</div>
+        <div style="font-size:.88rem;color:#0e7490;line-height:1.7">Dijkstra always picks the <strong>cheapest unvisited node</strong> — a greedy strategy that provably finds the optimal path for all non-negative weights.</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:.8rem;align-items:center;flex-wrap:wrap">
+        <div style="text-align:center"><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);font-weight:700">Invented</div><div style="font-size:.95rem;font-weight:800;color:#1e1b4b">1956</div><div style="font-size:.65rem;color:#6b7280">E.W. Dijkstra</div></div>
+        <div style="text-align:center"><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);font-weight:700">Structure</div><div style="font-size:.95rem;font-weight:800;color:#1e1b4b">Min-Heap</div><div style="font-size:.65rem;color:#6b7280">Priority Queue</div></div>
+        <div style="text-align:center"><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);font-weight:700">Optimality</div><div style="font-size:.95rem;font-weight:800;color:var(--green)">✅ Yes</div><div style="font-size:.65rem;color:#6b7280">Non-negative edges</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section id="overview" class="section">
+    <div class="section-label reveal">Overview</div>
+    <div class="analogy-banner analogy-cyan reveal">
+      <div class="analogy-emoji">🧭</div>
+      <div class="analogy-body">
+        <div class="analogy-title">Think of it as a GPS navigator</div>
+        <div class="analogy-text">Imagine planning the cheapest flight from city S to city T. You wouldn't just count the number of stops — you'd compare total ticket costs. Dijkstra works the same way: it always explores the city with the <strong>lowest cumulative cost</strong> so far, updating estimated costs whenever a cheaper route is found. Once a city is "settled", its cost is guaranteed optimal.</div>
+        <div class="analogy-tags">
+          <span class="analogy-tag">Min-Priority Queue</span>
+          <span class="analogy-tag">Greedy Strategy</span>
+          <span class="analogy-tag">Edge Relaxation</span>
+          <span class="analogy-tag">Invented: 1956 by Edsger Dijkstra</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-cyan reveal">
+      <div class="callout-icon">🔷</div>
+      <div>
+        <div class="callout-title">Why not just use BFS on a weighted graph?</div>
+        <div class="callout-body">BFS treats every edge as cost-1. If S→A costs 100 and S→B→A costs 2+1=3, BFS would return S→A (1 hop) as the "shortest" path. Dijkstra respects actual weights — it would correctly find S→B→A (total cost 3) as the cheapest route.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDGE RELAXATION -->
+  <section id="relaxation" class="section">
+    <div class="section-label reveal">Core Concept</div>
+    <h2 class="section-title reveal">Edge Relaxation — The Heart of Dijkstra</h2>
+    <div class="grid-2 reveal">
+      <div>
+        <p class="section-sub">"Relaxing" an edge (u→v) means asking: <em>"Is travelling through u cheaper than my current best estimate for v?"</em></p>
+        <div class="callout callout-cyan" style="margin-bottom:1rem">
+          <div class="callout-icon">⚡</div>
+          <div>
+            <div class="callout-title">Relaxation Formula</div>
+            <div class="callout-body" style="font-family:var(--mono);font-size:.9rem;padding:.5rem 0">
+              <strong>if</strong> dist[u] + weight(u,v) &lt; dist[v]:<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;dist[v] = dist[u] + weight(u,v)<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;prev[v] = u &nbsp; <span style="font-style:italic;font-family:var(--font);font-size:.82rem;color:var(--text-muted)">// record the path</span>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-blue">
+          <div class="callout-icon">🔑</div>
+          <div>
+            <div class="callout-title">Why "relaxation"?</div>
+            <div class="callout-body">The term comes from loosening a constraint. Initially dist[v]=∞ (very tight, conservative). Each time we relax the edge (u,v), we loosen the bound — allowing a shorter estimate. Eventually dist[v] converges to the true shortest path.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="padding:1.3rem">
+        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.9rem">Relaxation Example</div>
+        <svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;margin-bottom:.9rem">
+          <defs>
+            <marker id="dij-arr" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#06b6d4"/>
+            </marker>
+          </defs>
+          <!-- edges -->
+          <line x1="30" y1="80" x2="120" y2="32" stroke="#67e8f9" stroke-width="2.5" marker-end="url(#dij-arr)"/>
+          <line x1="30" y1="80" x2="120" y2="128" stroke="#22d3ee" stroke-width="3.5" marker-end="url(#dij-arr)"/>
+          <line x1="140" y1="128" x2="220" y2="80" stroke="#a5f3fc" stroke-width="2" marker-end="url(#dij-arr)"/>
+          <line x1="140" y1="128" x2="140" y2="48" stroke="#22d3ee" stroke-width="3" marker-end="url(#dij-arr)"/>
+          <line x1="140" y1="32" x2="220" y2="80" stroke="#67e8f9" stroke-width="2.5" marker-end="url(#dij-arr)"/>
+          <!-- weight labels -->
+          <rect x="55" y="38" width="20" height="13" rx="3" fill="white" opacity=".92"/><text x="65" y="48" text-anchor="middle" font-size="11" font-weight="bold" fill="#0891b2">4</text>
+          <rect x="50" y="102" width="20" height="13" rx="3" fill="white" opacity=".92"/><text x="60" y="112" text-anchor="middle" font-size="11" font-weight="bold" fill="#0891b2">2</text>
+          <rect x="155" y="70" width="20" height="13" rx="3" fill="white" opacity=".92"/><text x="165" y="80" text-anchor="middle" font-size="11" font-weight="bold" fill="#0891b2">1</text>
+          <rect x="183" y="96" width="20" height="13" rx="3" fill="white" opacity=".92"/><text x="193" y="106" text-anchor="middle" font-size="11" font-weight="bold" fill="#0891b2">6</text>
+          <rect x="183" y="44" width="20" height="13" rx="3" fill="white" opacity=".92"/><text x="193" y="54" text-anchor="middle" font-size="11" font-weight="bold" fill="#0891b2">5</text>
+          <!-- nodes -->
+          <circle cx="20" cy="80" r="17" fill="#cffafe" stroke="#06b6d4" stroke-width="2.5"/><text x="20" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="#0e7490">S</text>
+          <circle cx="130" cy="28" r="17" fill="#cffafe" stroke="#06b6d4" stroke-width="2"/><text x="130" y="33" text-anchor="middle" font-size="12" font-weight="bold" fill="#0e7490">A</text>
+          <circle cx="130" cy="132" r="17" fill="#a5f3fc" stroke="#06b6d4" stroke-width="2.5"/><text x="130" y="137" text-anchor="middle" font-size="12" font-weight="bold" fill="#0e7490">B</text>
+          <circle cx="230" cy="80" r="17" fill="#cffafe" stroke="#06b6d4" stroke-width="2"/><text x="230" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="#0e7490">T</text>
+          <!-- dist labels below -->
+          <text x="20" y="104" text-anchor="middle" font-size="9" font-weight="bold" fill="#06b6d4">dist=0</text>
+          <text x="130" y="154" text-anchor="middle" font-size="9" font-weight="bold" fill="#06b6d4">dist=2</text>
+          <text x="130" y="10" text-anchor="middle" font-size="9" font-weight="bold" fill="#06b6d4">dist=3</text>
+          <text x="230" y="104" text-anchor="middle" font-size="9" font-weight="bold" fill="#10b981">dist=8</text>
+          <text x="130" y="156" text-anchor="middle" font-size="8" fill="#10b981" dy="4">S→B→A cheaper!</text>
+        </svg>
+        <p style="font-size:.72rem;color:var(--text-muted);text-align:center">Best route: S→B(2)→A(+1=3)→T(+5=8). Direct S→A would cost 4+5=9.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ALGORITHM STEPS -->
+  <section id="steps" class="section">
+    <div class="section-label reveal">Algorithm Steps</div>
+    <h2 class="section-title reveal">How Dijkstra Works — Step by Step</h2>
+    <div class="grid-2 reveal">
+      <div>
+        <ol class="steps">
+          <li><strong>Initialise distances:</strong> Set dist[source]=0. Set dist[all other nodes]=∞. Create an empty previous-node map.</li>
+          <li><strong>Create min-heap:</strong> Insert the source with priority 0. All other nodes start with priority ∞.</li>
+          <li><strong>Extract minimum:</strong> Pop the node u with the smallest distance from the heap. This is the next node to settle.</li>
+          <li><strong>Skip if settled:</strong> If u was already processed (settled), skip it. This handles stale heap entries from lazy deletion.</li>
+          <li><strong>Relax all neighbours:</strong> For each neighbour v of u: if dist[u]+weight(u,v) &lt; dist[v], update dist[v] and push v into the heap with the new, lower priority.</li>
+          <li><strong>Repeat:</strong> Go back to step 3 until the heap is empty. Every node now has its optimal shortest distance from the source.</li>
+          <li><strong>Reconstruct path (optional):</strong> Follow prev[v] back from target to source to reconstruct the actual shortest path.</li>
+        </ol>
+      </div>
+      <div class="callout callout-green">
+        <div class="callout-icon">🔑</div>
+        <div>
+          <div class="callout-title">Why Dijkstra's Greedy Choice is Always Safe</div>
+          <div class="callout-body">
+            When we extract node u (minimum distance), its distance is <strong>already optimal</strong>. Why? Because:
+            <br><br>
+            1. Every other node in the heap has dist ≥ dist[u] (min-heap property).<br>
+            2. All edge weights are <strong>non-negative</strong>.<br>
+            3. Therefore, no future path through unprocessed nodes can make u cheaper.<br>
+            <br>
+            This is exactly <strong>why negative weights break Dijkstra</strong> — a negative edge could let us "go back" and find a cheaper path to an already-settled node.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISUALIZER -->
+  <section id="visualizer" class="section">
+    <div class="section-label reveal">Interactive</div>
+    <h2 class="section-title reveal">Dijkstra Live Visualizer</h2>
+    <p class="section-sub reveal">Watch the distance table update in real time. Cyan edges = relaxed (improved). Green = final shortest path. Each node shows its current best distance below the label.</p>
+
+    <div class="viz-panel reveal" style="border-color:rgba(6,182,212,.25)">
+      <div class="viz-header">
+        <span class="viz-title">Dijkstra's Shortest Path — Source S, Target T</span>
+        <span class="viz-status-dot" id="dijkstraStatusDot"></span>
+      </div>
+      <div class="viz-legend">
+        <span class="leg leg-unvisited"><span class="leg-dot"></span>Unvisited</span>
+        <span class="leg leg-current"><span class="leg-dot"></span>Processing</span>
+        <span class="leg leg-visited"><span class="leg-dot"></span>Settled</span>
+        <span class="leg leg-relaxed"><span class="leg-line"></span>Relaxed</span>
+        <span class="leg leg-path-item"><span class="leg-line"></span>Shortest Path</span>
+      </div>
+      <div class="viz-canvas-wrap"><canvas id="dijkstraCanvas"></canvas></div>
+      <div class="viz-action">
+        <span class="viz-action-icon">ℹ️</span>
+        <span class="viz-action-text" id="dijkstraActionText">Source = S, Target = T. Press ▶ Play or → Step to begin</span>
+      </div>
+      <div class="viz-progress">
+        <div class="viz-progress-bar"><div class="viz-progress-fill" id="dijkstraProgressFill" style="background:linear-gradient(90deg,var(--cyan),var(--green))"></div></div>
+        <span class="viz-progress-text" id="dijkstraProgressText">Step 0 / 0</span>
+      </div>
+      <div class="viz-controls">
+        <button class="viz-btn viz-btn-cyan" id="dijkstraPlay">▶ Play</button>
+        <button class="viz-btn viz-btn-cyan" id="dijkstraStep">→ Step</button>
+        <button class="viz-btn viz-btn-speed" id="dijkstraSpeed">1×</button>
+        <button class="viz-btn viz-btn-reset" id="dijkstraReset">↺ Reset</button>
+      </div>
+      <div class="viz-data-row">
+        <div class="viz-data-box">
+          <div class="lbl">Min-Heap Priority Queue</div>
+          <div class="val" style="color:var(--cyan)" id="dijkstraHeapVal">[ ]</div>
+        </div>
+        <div class="viz-data-box">
+          <div class="lbl">Distances from S</div>
+          <div class="val val-green" id="dijkstraDistVal">—</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKED EXAMPLE -->
+  <section id="worked-example" class="section">
+    <div class="section-label reveal">Worked Example</div>
+    <h2 class="section-title reveal">Distance Table Trace</h2>
+    <p class="section-sub reveal">Graph: S→A(4), S→B(2), B→A(1), A→T(5), B→T(8). Find shortest path S→T.</p>
+
+    <div class="worked-ex we-cyan reveal">
+      <div class="we-head">Dijkstra Distance Table — how each node's distance updates</div>
+      <div style="overflow-x:auto">
+        <table class="we-table">
+          <thead>
+            <tr><th>Step</th><th>Extract (settle)</th><th>Action</th><th>dist[S]</th><th>dist[A]</th><th>dist[B]</th><th>dist[T]</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Init</td><td>—</td><td>Set dist[S]=0, others=∞</td><td><strong>0</strong></td><td>∞</td><td>∞</td><td>∞</td></tr>
+            <tr class="we-hl-c"><td>1</td><td><strong>S</strong> (dist=0)</td><td>Relax S→A: 0+4=4. Relax S→B: 0+2=2.</td><td>0 ✓</td><td>4</td><td>2</td><td>∞</td></tr>
+            <tr><td>2</td><td><strong>B</strong> (dist=2)</td><td>Relax B→A: 2+1=<strong style="color:var(--green)">3 &lt; 4</strong> → update! Relax B→T: 2+8=10.</td><td>0 ✓</td><td><strong style="color:var(--green)">3 ↓</strong></td><td>2 ✓</td><td>10</td></tr>
+            <tr><td>3</td><td><strong>A</strong> (dist=3)</td><td>Relax A→T: 3+5=<strong style="color:var(--green)">8 &lt; 10</strong> → update!</td><td>0 ✓</td><td>3 ✓</td><td>2 ✓</td><td><strong style="color:var(--green)">8 ↓</strong></td></tr>
+            <tr class="we-done"><td>4</td><td><strong>T</strong> (dist=8)</td><td>T settled. No outgoing edges. Done! ✅</td><td>0 ✓</td><td>3 ✓</td><td>2 ✓</td><td>8 ✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="we-result" style="color:var(--cyan);border-top-color:rgba(6,182,212,.12);background:rgba(6,182,212,.03)">
+        Shortest path: S → B → A → T &nbsp;|&nbsp; Total cost = 8 &nbsp;|&nbsp; Direct S→A→T costs 4+5=9 — Dijkstra found the cheaper detour!
+      </div>
+    </div>
+  </section>
+
+  <!-- CODE -->
+  <section id="code" class="section">
+    <div class="section-label reveal">Implementation</div>
+    <h2 class="section-title reveal">Python Code</h2>
+    <div class="grid-2">
+      <div class="code-block reveal">
+        <div class="code-header"><span class="lang-tag lt-cyan">Python</span><span>Dijkstra — Full Implementation</span></div>
+<pre><code><span class="kw">import</span> heapq
+
+<span class="kw">def</span> <span class="fn">dijkstra</span>(graph, start):
+    <span class="cm"># graph = {node: [(nb, weight), ...]}</span>
+    dist = {n: float(<span class="st">'inf'</span>) <span class="kw">for</span> n <span class="kw">in</span> graph}
+    prev = {n: <span class="kw">None</span> <span class="kw">for</span> n <span class="kw">in</span> graph}
+    dist[start] = <span class="nm">0</span>
+    heap = [(<span class="nm">0</span>, start)]  <span class="cm"># (cost, node)</span>
+
+    <span class="kw">while</span> heap:
+        cost, u = heapq.heappop(heap)  <span class="cm"># extract min</span>
+        <span class="kw">if</span> cost > dist[u]:
+            <span class="kw">continue</span>  <span class="cm"># stale entry, skip</span>
+
+        <span class="kw">for</span> v, w <span class="kw">in</span> graph[u]:
+            nd = dist[u] + w   <span class="cm"># tentative distance</span>
+            <span class="kw">if</span> nd < dist[v]:   <span class="cm"># relaxation</span>
+                dist[v] = nd
+                prev[v] = u
+                heapq.heappush(heap, (nd, v))
+
+    <span class="kw">return</span> dist, prev</code></pre>
+      </div>
+      <div class="code-block reveal">
+        <div class="code-header"><span class="lang-tag lt-cyan">Python</span><span>Reconstruct Shortest Path</span></div>
+<pre><code><span class="kw">def</span> <span class="fn">get_path</span>(prev, target):
+    <span class="cm">"""Reconstruct path from source to target."""</span>
+    path = []
+    cur = target
+    <span class="kw">while</span> cur <span class="kw">is not None</span>:
+        path.append(cur)
+        cur = prev[cur]
+    <span class="kw">return</span> path[::-<span class="nm">1</span>]  <span class="cm"># reverse to get src→target</span>
+
+<span class="cm"># --- Example usage ---</span>
+graph = {
+    <span class="st">'S'</span>: [(<span class="st">'A'</span>,<span class="nm">4</span>), (<span class="st">'B'</span>,<span class="nm">2</span>)],
+    <span class="st">'A'</span>: [(<span class="st">'T'</span>,<span class="nm">5</span>)],
+    <span class="st">'B'</span>: [(<span class="st">'A'</span>,<span class="nm">1</span>), (<span class="st">'T'</span>,<span class="nm">8</span>)],
+    <span class="st">'T'</span>: [],
+}
+
+dist, prev = dijkstra(graph, <span class="st">'S'</span>)
+print(dist)        <span class="cm"># {'S':0,'A':3,'B':2,'T':8}</span>
+print(get_path(prev, <span class="st">'T'</span>))  <span class="cm"># ['S','B','A','T']</span>
+
+<span class="cm"># Time:  O((V+E) log V)  with binary heap</span>
+<span class="cm"># Space: O(V)  for dist + prev arrays</span></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIMITATIONS -->
+  <section id="limits" class="section">
+    <div class="section-label reveal">Limitations &amp; Variants</div>
+    <h2 class="section-title reveal">When Dijkstra Fails &amp; What to Use Instead</h2>
+    <div class="grid-2 reveal">
+      <div class="callout callout-orange">
+        <div class="callout-icon">❌</div>
+        <div>
+          <div class="callout-title">Dijkstra fails with negative weights</div>
+          <div class="callout-body">If any edge has a negative weight, a "settled" node might later get a cheaper path found — breaking the greedy guarantee. Example: S→A(3), S→B(5), B→A(-4). Dijkstra settles A at cost 3, but the true shortest is S→B→A = 5+(−4) = 1. Use <strong>Bellman-Ford</strong> for negative weights.</div>
+        </div>
+      </div>
+      <div class="callout callout-blue">
+        <div class="callout-icon">📊</div>
+        <div>
+          <div class="callout-title">Choosing the right algorithm</div>
+          <div class="callout-body">
+            <strong>Unweighted graph:</strong> BFS — O(V+E)<br>
+            <strong>Weighted, no negatives:</strong> Dijkstra — O((V+E) log V)<br>
+            <strong>Negative weights:</strong> Bellman-Ford — O(VE)<br>
+            <strong>Need a heuristic:</strong> A* — faster with good h(n)<br>
+            <strong>All pairs:</strong> Floyd-Warshall — O(V³)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap reveal" style="margin-top:1.5rem">
+      <table>
+        <thead><tr><th>Algorithm</th><th>Edge Weights</th><th>Time Complexity</th><th>Best Used When</th></tr></thead>
+        <tbody>
+          <tr class="td-blue"><td><strong>BFS</strong></td><td>Unweighted (all = 1)</td><td><code>O(V + E)</code></td><td>Fewest hops, equal edges</td></tr>
+          <tr class="td-cyan"><td><strong>Dijkstra's</strong></td><td>Non-negative</td><td><code>O((V+E) log V)</code></td><td>Weighted, no negatives</td></tr>
+          <tr class="td-purple"><td><strong>Bellman-Ford</strong></td><td>Any (incl. negative)</td><td><code>O(V · E)</code></td><td>Negative weights allowed</td></tr>
+          <tr class="td-pink"><td><strong>A*</strong></td><td>Non-negative</td><td><code>O(E log V)</code></td><td>With a good heuristic</td></tr>
+          <tr class="td-green"><td><strong>Floyd-Warshall</strong></td><td>Any</td><td><code>O(V³)</code></td><td>All-pairs shortest paths</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- navigation -->
+  <div class="grid-2 reveal">
+    <a href="dfs.html" class="card-sm" style="display:block;text-align:center;cursor:pointer">
+      <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.3rem">← Previous</div>
+      <div style="font-weight:700;color:var(--text)">🟣 Depth-First Search</div>
+    </a>
+    <a href="compare.html" class="card-sm" style="display:block;text-align:center;cursor:pointer;border-top:3px solid var(--green)">
+      <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.3rem">Next →</div>
+      <div style="font-weight:700;color:var(--text)">📊 Compare All Algorithms</div>
+    </a>
+  </div>
+
+  <footer class="footer" style="margin-top:2rem">
+    <div class="footer-brand">⬡ <span>GraphAlgo</span></div>
+    <p>Chauhan Jayvirsinh · Enro: 240503030003 · DAA Active Learning Activity</p>
+    <p class="footer-made">Made with IBM Bob</p>
+  </footer>
+</main>
+</div>
+
+<script src="graph-visualizer.js"></script>
+<script src="nav.js"></script>
+</body>
+</html>

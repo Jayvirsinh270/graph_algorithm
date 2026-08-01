@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>GraphAlgo — BFS</title>
+  <link rel="stylesheet" href="shared.css"/>
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle"><span></span><span></span><span></span></button>
+<div class="app-wrapper">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-icon">⬡</div>
+    <div><div class="sidebar-brand-name">GraphAlgo<span class="sidebar-brand-dot">.</span></div></div>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar">CJ</div>
+    <div>
+      <div class="sidebar-user-name">Chauhan Jayvirsinh</div>
+      <div class="sidebar-user-role">Enro · 240503030003</div>
+    </div>
+  </div>
+  <div class="sidebar-nav-label">Pages</div>
+  <ul class="sidebar-nav">
+    <li><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
+    <li><a href="graphs.html"><span class="nav-icon">📖</span> Graph Types</a></li>
+    <li class="active"><a href="bfs.html"><span class="nav-icon">🔵</span> BFS</a></li>
+    <li><a href="dfs.html"><span class="nav-icon">🟣</span> DFS</a></li>
+    <li><a href="dijkstra.html"><span class="nav-icon">🔷</span> Dijkstra's</a></li>
+    <li><a href="compare.html"><span class="nav-icon">📊</span> Compare</a></li>
+  </ul>
+  <div class="sidebar-nav-label">On this page</div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview"><span class="nav-icon">📌</span> Overview</a></li>
+    <li><a href="#how-it-works"><span class="nav-icon">⚙️</span> How it Works</a></li>
+    <li><a href="#visualizer"><span class="nav-icon">▶️</span> Visualizer</a></li>
+    <li><a href="#worked-example"><span class="nav-icon">📋</span> Worked Example</a></li>
+    <li><a href="#code"><span class="nav-icon">💻</span> Code</a></li>
+    <li><a href="#applications"><span class="nav-icon">🌍</span> Applications</a></li>
+    <li><a href="#insights"><span class="nav-icon">🔑</span> Key Insights</a></li>
+  </ul>
+  <div class="sidebar-footer">
+    <div class="sf-emoji">🔵</div>
+    <div class="sf-title">BFS</div>
+    <div class="sf-sub">Level-by-level traversal</div>
+  </div>
+</aside>
+
+<main class="main-content">
+
+  <!-- HEADER -->
+  <div class="page-header reveal">
+    <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><span>BFS</span></div>
+    <div class="page-badge badge-blue">🔵 Algorithm 1 of 3</div>
+    <h1 class="page-title">Breadth-First Search</h1>
+    <p class="page-subtitle">Explores every node at distance 1 before distance 2, distance 2 before distance 3 — like ripples expanding across a pond. Guarantees the shortest path in unweighted graphs.</p>
+    <div class="chip-row">
+      <span class="chip chip-time">⏱ Time: O(V + E)</span>
+      <span class="chip chip-space">📦 Space: O(V)</span>
+      <span class="chip chip-green">✅ Shortest path (unweighted)</span>
+    </div>
+  </div>
+
+  <!-- Mini animated intro strip -->
+  <div class="reveal" style="position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(219,234,254,.5),rgba(191,219,254,.35));border:1.5px solid rgba(59,130,246,.18);border-radius:var(--r-md);padding:1.2rem 1.8rem;margin-bottom:2rem">
+    <div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap">
+      <div style="font-size:2.2rem;animation:pulseEmoji 3s ease-in-out infinite">🌊</div>
+      <div>
+        <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#1d4ed8;margin-bottom:.2rem">Level-by-Level Traversal</div>
+        <div style="font-size:.88rem;color:#1e40af;line-height:1.7">BFS uses a <strong>FIFO queue</strong> to process nodes ring by ring — guaranteeing the minimum number of hops to every reachable node.</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:.8rem;align-items:center;flex-wrap:wrap">
+        <div style="text-align:center"><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:#3b82f6;font-weight:700">Invented</div><div style="font-size:.95rem;font-weight:800;color:#1e1b4b">1959</div><div style="font-size:.65rem;color:#6b7280">E.F. Moore</div></div>
+        <div style="text-align:center"><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:#3b82f6;font-weight:700">Structure</div><div style="font-size:.95rem;font-weight:800;color:#1e1b4b">Queue</div><div style="font-size:.65rem;color:#6b7280">FIFO</div></div>
+        <div style="text-align:center"><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:#3b82f6;font-weight:700">Optimality</div><div style="font-size:.95rem;font-weight:800;color:var(--green)">✅ Yes</div><div style="font-size:.65rem;color:#6b7280">Unweighted</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section id="overview" class="section">
+    <div class="section-label reveal">Overview</div>
+
+    <!-- Analogy banner -->
+    <div class="analogy-banner analogy-blue reveal">
+      <div class="analogy-emoji">🌊</div>
+      <div class="analogy-body">
+        <div class="analogy-title">Think of it as a water ripple</div>
+        <div class="analogy-text">Drop a stone into a still pond — rings of ripples spread outward, each ring at the same distance from the centre before the next one forms. BFS does the same: from the start node, it visits every neighbour (distance 1), then every neighbour-of-neighbour (distance 2), and so on — never jumping ahead to a farther node until all closer ones are done.</div>
+        <div class="analogy-tags">
+          <span class="analogy-tag">FIFO Queue</span>
+          <span class="analogy-tag">Level by Level</span>
+          <span class="analogy-tag">Shortest Path (Unweighted)</span>
+          <span class="analogy-tag">Invented: 1959 by E.F. Moore</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Why queue? callout -->
+    <div class="callout callout-blue reveal">
+      <div class="callout-icon">🔵</div>
+      <div>
+        <div class="callout-title">Why a Queue (FIFO)?</div>
+        <div class="callout-body">A queue processes nodes in the exact order they were discovered. The <strong>first node in is the first out</strong> — this ensures we always handle distance-1 nodes before distance-2, distance-2 before distance-3. Swap the queue for a stack and you get DFS (depth-first) behaviour instead.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works" class="section">
+    <div class="section-label reveal">How it Works</div>
+    <h2 class="section-title reveal">Step-by-Step Algorithm</h2>
+
+    <div class="grid-2 reveal">
+      <div>
+        <ol class="steps">
+          <li><strong>Initialise:</strong> Create a queue. Add the start node to it. Mark the start node as <em>visited</em> so we never process it twice.</li>
+          <li><strong>Dequeue:</strong> Remove the node at the front of the queue. This is the current node we are about to process.</li>
+          <li><strong>Explore neighbours:</strong> Look at every neighbour of the current node. For each one that has <em>not</em> been visited yet — mark it visited and add it to the back of the queue.</li>
+          <li><strong>Repeat:</strong> Go back to step 2. Keep dequeuing and exploring until the queue is completely empty.</li>
+          <li><strong>Done:</strong> Every node reachable from the start has been visited exactly once. The traversal order is the BFS order.</li>
+        </ol>
+
+        <div class="callout callout-orange" style="margin-top:1.2rem">
+          <div class="callout-icon">⚠️</div>
+          <div>
+            <div class="callout-title">Common Mistake</div>
+            <div class="callout-body">Always mark a node as visited <strong>when you enqueue it</strong>, not when you dequeue it. If you wait until dequeue, the same node can be added to the queue multiple times — causing redundant processing and possible infinite loops.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <!-- Mini graph diagram -->
+        <div class="card" style="padding:1rem;margin-bottom:1rem">
+          <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.6rem">Graph used in examples below</div>
+          <svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+            <!-- edges -->
+            <line x1="140" y1="35" x2="60" y2="110" stroke="#93c5fd" stroke-width="2"/>
+            <line x1="140" y1="35" x2="220" y2="110" stroke="#93c5fd" stroke-width="2"/>
+            <line x1="140" y1="35" x2="140" y2="110" stroke="#93c5fd" stroke-width="2"/>
+            <line x1="60"  y1="110" x2="30"  y2="175" stroke="#93c5fd" stroke-width="2"/>
+            <line x1="60"  y1="110" x2="100" y2="175" stroke="#93c5fd" stroke-width="2"/>
+            <line x1="140" y1="110" x2="100" y2="175" stroke="#93c5fd" stroke-width="2"/>
+            <line x1="220" y1="110" x2="250" y2="175" stroke="#93c5fd" stroke-width="2"/>
+            <!-- nodes -->
+            <circle cx="140" cy="35"  r="20" fill="#dbeafe" stroke="#3b82f6" stroke-width="2.5"/><text x="140" y="41"  text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">A</text>
+            <circle cx="60"  cy="110" r="20" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="60"  y="116" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">B</text>
+            <circle cx="140" cy="110" r="20" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="140" y="116" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">C</text>
+            <circle cx="220" cy="110" r="20" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="220" y="116" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">D</text>
+            <circle cx="30"  cy="175" r="20" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="30"  y="181" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">E</text>
+            <circle cx="100" cy="175" r="20" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="100" y="181" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">F</text>
+            <circle cx="250" cy="175" r="20" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="250" y="181" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">G</text>
+            <!-- level labels -->
+            <text x="8" y="38"  font-size="9" fill="#93c5fd" font-weight="600">Level 0</text>
+            <text x="8" y="113" font-size="9" fill="#93c5fd" font-weight="600">Level 1</text>
+            <text x="8" y="178" font-size="9" fill="#93c5fd" font-weight="600">Level 2</text>
+          </svg>
+          <p style="font-size:.67rem;color:var(--text-muted);text-align:center;margin-top:.4rem">7 nodes · 7 edges · 3 BFS levels from A</p>
+        </div>
+
+        <!-- BFS level-by-level explanation -->
+        <div class="card-sm">
+          <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.6rem">BFS Visits by Level</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem">
+            <div style="display:flex;align-items:center;gap:.6rem;padding:.4rem .6rem;background:#dbeafe;border-radius:6px;font-size:.82rem">
+              <span style="font-weight:800;color:#1d4ed8;min-width:52px">Level 0:</span><span style="color:#1e40af">A</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:.6rem;padding:.4rem .6rem;background:#ede9fe;border-radius:6px;font-size:.82rem">
+              <span style="font-weight:800;color:var(--purple);min-width:52px">Level 1:</span><span style="color:var(--purple)">B, C, D</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:.6rem;padding:.4rem .6rem;background:#d1fae5;border-radius:6px;font-size:.82rem">
+              <span style="font-weight:800;color:var(--green);min-width:52px">Level 2:</span><span style="color:var(--green)">E, F, G</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISUALIZER -->
+  <section id="visualizer" class="section">
+    <div class="section-label reveal">Interactive</div>
+    <h2 class="section-title reveal">BFS Live Visualizer</h2>
+    <p class="section-sub reveal">Press <strong>▶ Play</strong> to auto-run, or <strong>→ Step</strong> for manual control. Watch nodes change colour and read the action bar for a plain-English explanation of each step.</p>
+
+    <div class="viz-panel reveal">
+      <div class="viz-header">
+        <span class="viz-title">BFS — Breadth-First Search</span>
+        <span class="viz-status-dot" id="bfsStatusDot"></span>
+      </div>
+      <div class="viz-legend">
+        <span class="leg leg-unvisited"><span class="leg-dot"></span>Unvisited</span>
+        <span class="leg leg-queued"><span class="leg-dot"></span>In Queue</span>
+        <span class="leg leg-current"><span class="leg-dot"></span>Current</span>
+        <span class="leg leg-visited"><span class="leg-dot"></span>Visited</span>
+      </div>
+      <div class="viz-canvas-wrap"><canvas id="bfsCanvas"></canvas></div>
+      <div class="viz-action">
+        <span class="viz-action-icon">ℹ️</span>
+        <span class="viz-action-text" id="bfsActionText">Press ▶ Play to start, or → Step for manual control</span>
+      </div>
+      <div class="viz-progress">
+        <div class="viz-progress-bar"><div class="viz-progress-fill" id="bfsProgressFill"></div></div>
+        <span class="viz-progress-text" id="bfsProgressText">Step 0 / 0</span>
+      </div>
+      <div class="viz-controls">
+        <button class="viz-btn" id="bfsPlay">▶ Play</button>
+        <button class="viz-btn" id="bfsStep">→ Step</button>
+        <button class="viz-btn viz-btn-speed" id="bfsSpeed">1×</button>
+        <button class="viz-btn viz-btn-reset" id="bfsReset">↺ Reset</button>
+      </div>
+      <div class="viz-data-row">
+        <div class="viz-data-box">
+          <div class="lbl">Queue (Front → Back)</div>
+          <div class="val val-pink" id="bfsQueueVal">[ ]</div>
+        </div>
+        <div class="viz-data-box">
+          <div class="lbl">Visit Order</div>
+          <div class="val" id="bfsOrderVal">—</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKED EXAMPLE -->
+  <section id="worked-example" class="section">
+    <div class="section-label reveal">Worked Example</div>
+    <h2 class="section-title reveal">Trace Through — Step by Step</h2>
+    <p class="section-sub reveal">Graph: A–B, A–C, A–D, B–E, B–F, C–F, D–G. Starting from node <strong>A</strong>.</p>
+
+    <div class="worked-ex reveal">
+      <div class="we-head">BFS State Table — Queue and Visited Set at Each Step</div>
+      <div style="overflow-x:auto">
+        <table class="we-table">
+          <thead>
+            <tr><th>Step</th><th>Action</th><th>Queue (Front→Back)</th><th>Visited Set</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Init</td><td>Start</td><td>[A]</td><td>{A}</td><td>Mark A visited when enqueuing</td></tr>
+            <tr class="we-hl"><td>1</td><td>Dequeue <strong>A</strong> · enqueue B, C, D</td><td>[B, C, D]</td><td>{A,B,C,D}</td><td>All 3 neighbours added at once</td></tr>
+            <tr><td>2</td><td>Dequeue <strong>B</strong> · enqueue E, F</td><td>[C, D, E, F]</td><td>{A,B,C,D,E,F}</td><td>C,D already in queue</td></tr>
+            <tr><td>3</td><td>Dequeue <strong>C</strong> · F already visited</td><td>[D, E, F]</td><td>{A,B,C,D,E,F}</td><td>No new nodes added</td></tr>
+            <tr><td>4</td><td>Dequeue <strong>D</strong> · enqueue G</td><td>[E, F, G]</td><td>{A,B,C,D,E,F,G}</td><td>G added (distance 2 from A)</td></tr>
+            <tr><td>5</td><td>Dequeue <strong>E</strong> · no unvisited neighbours</td><td>[F, G]</td><td>{A,B,C,D,E,F,G}</td><td>Leaf node</td></tr>
+            <tr><td>6</td><td>Dequeue <strong>F</strong> · no unvisited neighbours</td><td>[G]</td><td>{A,B,C,D,E,F,G}</td><td>Leaf node</td></tr>
+            <tr class="we-done"><td>7</td><td>Dequeue <strong>G</strong> · queue empty ✅</td><td>[ ]</td><td>{A,B,C,D,E,F,G}</td><td>BFS complete</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="we-result">BFS order: A → B → C → D → E → F → G &nbsp;|&nbsp; Shortest path A→G = 2 hops (A→D→G)</div>
+    </div>
+
+    <div class="callout callout-green reveal">
+      <div class="callout-icon">🔑</div>
+      <div>
+        <div class="callout-title">Why BFS guarantees the shortest path</div>
+        <div class="callout-body">BFS visits nodes in non-decreasing order of their distance from the source. The <em>first time</em> BFS reaches a node, it has arrived via the fewest possible hops — because all closer nodes were already processed before any farther ones. No shorter path exists that BFS could have missed, as long as all edges have equal cost (unweighted).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CODE -->
+  <section id="code" class="section">
+    <div class="section-label reveal">Implementation</div>
+    <h2 class="section-title reveal">Python Code</h2>
+
+    <div class="grid-2">
+      <div class="code-block reveal">
+        <div class="code-header">
+          <span class="lang-tag lt-py">Python</span>
+          <span>BFS — Basic Traversal</span>
+        </div>
+<pre><code><span class="kw">from</span> collections <span class="kw">import</span> deque
+
+<span class="kw">def</span> <span class="fn">bfs</span>(graph, start):
+    <span class="cm"># graph = { node: [neighbour, ...] }</span>
+    visited = {start}       <span class="cm"># ① mark start visited</span>
+    queue = deque([start])  <span class="cm"># ② FIFO queue</span>
+    order = []
+
+    <span class="kw">while</span> queue:
+        node = queue.popleft()  <span class="cm"># ③ dequeue front</span>
+        order.append(node)
+
+        <span class="kw">for</span> nb <span class="kw">in</span> graph[node]:
+            <span class="kw">if</span> nb <span class="kw">not in</span> visited:
+                visited.add(nb)   <span class="cm"># ④ mark on enqueue!</span>
+                queue.append(nb)
+    <span class="kw">return</span> order
+
+<span class="cm"># Example usage</span>
+graph = {
+    <span class="st">'A'</span>: [<span class="st">'B'</span>,<span class="st">'C'</span>,<span class="st">'D'</span>],
+    <span class="st">'B'</span>: [<span class="st">'A'</span>,<span class="st">'E'</span>,<span class="st">'F'</span>],
+    <span class="st">'C'</span>: [<span class="st">'A'</span>,<span class="st">'F'</span>],
+    <span class="st">'D'</span>: [<span class="st">'A'</span>,<span class="st">'G'</span>],
+    <span class="st">'E'</span>: [<span class="st">'B'</span>], <span class="st">'F'</span>: [<span class="st">'B'</span>,<span class="st">'C'</span>], <span class="st">'G'</span>: [<span class="st">'D'</span>],
+}
+print(bfs(graph, <span class="st">'A'</span>))
+<span class="cm"># → ['A','B','C','D','E','F','G']</span></code></pre>
+      </div>
+
+      <div class="code-block reveal">
+        <div class="code-header">
+          <span class="lang-tag lt-py">Python</span>
+          <span>BFS — Shortest Path Distance</span>
+        </div>
+<pre><code><span class="kw">from</span> collections <span class="kw">import</span> deque
+
+<span class="kw">def</span> <span class="fn">bfs_distance</span>(graph, start):
+    <span class="cm">"""Returns distance (hops) from start to every node."""</span>
+    dist = {start: <span class="nm">0</span>}
+    queue = deque([start])
+
+    <span class="kw">while</span> queue:
+        node = queue.popleft()
+        <span class="kw">for</span> nb <span class="kw">in</span> graph[node]:
+            <span class="kw">if</span> nb <span class="kw">not in</span> dist:
+                dist[nb] = dist[node] + <span class="nm">1</span>
+                queue.append(nb)
+    <span class="kw">return</span> dist
+
+<span class="kw">def</span> <span class="fn">bfs_path</span>(graph, start, end):
+    <span class="cm">"""Returns the actual shortest path as a list."""</span>
+    prev = {start: <span class="kw">None</span>}
+    queue = deque([start])
+
+    <span class="kw">while</span> queue:
+        node = queue.popleft()
+        <span class="kw">if</span> node == end: <span class="kw">break</span>
+        <span class="kw">for</span> nb <span class="kw">in</span> graph[node]:
+            <span class="kw">if</span> nb <span class="kw">not in</span> prev:
+                prev[nb] = node
+                queue.append(nb)
+
+    <span class="cm"># reconstruct path</span>
+    path, cur = [], end
+    <span class="kw">while</span> cur <span class="kw">is not None</span>:
+        path.append(cur); cur = prev.get(cur)
+    <span class="kw">return</span> path[::-<span class="nm">1</span>]  <span class="cm"># reverse</span>
+
+print(bfs_path(graph, <span class="st">'A'</span>, <span class="st">'G'</span>))
+<span class="cm"># → ['A', 'D', 'G']</span></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- APPLICATIONS -->
+  <section id="applications" class="section">
+    <div class="section-label reveal">Applications</div>
+    <h2 class="section-title reveal">Real-World Uses of BFS</h2>
+    <div class="grid-3 reveal stagger">
+      <div class="card-sm" style="border-left:3px solid #3b82f6">
+        <div style="font-size:1.5rem;margin-bottom:.5rem">👥</div>
+        <h4 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.3rem">Social Networks</h4>
+        <p style="font-size:.81rem;color:var(--text-sub);line-height:1.7">LinkedIn's "degrees of separation" and Facebook's "People You May Know" both use BFS to find mutual connections at distance 1, 2, 3 from any user.</p>
+      </div>
+      <div class="card-sm" style="border-left:3px solid #3b82f6">
+        <div style="font-size:1.5rem;margin-bottom:.5rem">🌐</div>
+        <h4 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.3rem">Web Crawlers</h4>
+        <p style="font-size:.81rem;color:var(--text-sub);line-height:1.7">Google's crawler uses BFS to discover pages link by link — visiting pages 1 hop away before exploring deeper links, ensuring broad coverage of nearby content first.</p>
+      </div>
+      <div class="card-sm" style="border-left:3px solid #3b82f6">
+        <div style="font-size:1.5rem;margin-bottom:.5rem">🧩</div>
+        <h4 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.3rem">Puzzle Solving</h4>
+        <p style="font-size:.81rem;color:var(--text-sub);line-height:1.7">Sliding puzzles, Rubik's cube solvers, and board game AI use BFS to find the <em>minimum number of moves</em> to reach the goal state.</p>
+      </div>
+      <div class="card-sm" style="border-left:3px solid var(--green)">
+        <div style="font-size:1.5rem;margin-bottom:.5rem">🗺️</div>
+        <h4 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.3rem">GPS (Unweighted)</h4>
+        <p style="font-size:.81rem;color:var(--text-sub);line-height:1.7">Finding the route with the fewest road segments (not shortest distance). For minimum distance, Dijkstra's is used instead.</p>
+      </div>
+      <div class="card-sm" style="border-left:3px solid var(--green)">
+        <div style="font-size:1.5rem;margin-bottom:.5rem">🔌</div>
+        <h4 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.3rem">Network Broadcasting</h4>
+        <p style="font-size:.81rem;color:var(--text-sub);line-height:1.7">Efficiently broadcasts a message to all nodes in a network at minimum hops — used in peer-to-peer networks and distributed systems.</p>
+      </div>
+      <div class="card-sm" style="border-left:3px solid var(--orange)">
+        <div style="font-size:1.5rem;margin-bottom:.5rem">🧬</div>
+        <h4 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.3rem">Bioinformatics</h4>
+        <p style="font-size:.81rem;color:var(--text-sub);line-height:1.7">Exploring protein interaction networks and gene regulatory networks — finding all proteins reachable within k hops from a target protein.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- KEY INSIGHTS -->
+  <section id="insights" class="section">
+    <div class="section-label reveal">Key Insights</div>
+    <h2 class="section-title reveal">What Every Beginner Should Know</h2>
+    <div class="grid-2 reveal stagger">
+      <div class="callout callout-blue">
+        <div class="callout-icon">✅</div>
+        <div>
+          <div class="callout-title">When to use BFS</div>
+          <div class="callout-body">
+            Use BFS when you need the <strong>shortest path by number of hops</strong>, want to find all nodes <strong>within k steps</strong>, need to check if a graph is <strong>connected</strong>, or are solving a problem where you want the <strong>fewest moves</strong> (unweighted). BFS is also ideal for level-order processing of trees.
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-orange">
+        <div class="callout-icon">⚠️</div>
+        <div>
+          <div class="callout-title">When NOT to use BFS</div>
+          <div class="callout-body">
+            BFS is <strong>not suitable for weighted graphs</strong> — use Dijkstra's instead. It uses <strong>more memory than DFS</strong> on wide graphs because the entire frontier is stored in the queue. BFS also cannot perform <strong>topological sort</strong> (use DFS). For very deep graphs, BFS's memory use can be prohibitive.
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-purple">
+        <div class="callout-icon">⚡</div>
+        <div>
+          <div class="callout-title">BFS vs DFS — Quick Decision</div>
+          <div class="callout-body">
+            <strong>BFS:</strong> shortest path, level-by-level, queue, broad graphs.<br>
+            <strong>DFS:</strong> deep exploration, backtracking, stack, cycle detection, topological sort.<br>
+            Same time complexity <code>O(V+E)</code> but different memory profiles — BFS uses O(width), DFS uses O(depth).
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-green">
+        <div class="callout-icon">🔑</div>
+        <div>
+          <div class="callout-title">Complexity Breakdown</div>
+          <div class="callout-body">
+            <strong>Time O(V+E):</strong> every vertex dequeued once (V), every edge inspected once (E).<br>
+            <strong>Space O(V):</strong> at worst, all vertices are in the queue simultaneously (e.g. a star graph).<br>
+            Using an <strong>adjacency list</strong> is essential — an adjacency matrix would make it O(V²).
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- navigation -->
+  <div class="grid-2 reveal">
+    <a href="graphs.html" class="card-sm" style="display:block;text-align:center;cursor:pointer">
+      <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.3rem">← Previous</div>
+      <div style="font-weight:700;color:var(--text)">📖 Graph Types</div>
+    </a>
+    <a href="dfs.html" class="card-sm" style="display:block;text-align:center;cursor:pointer;border-top:3px solid var(--purple)">
+      <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.3rem">Next →</div>
+      <div style="font-weight:700;color:var(--text)">🟣 Depth-First Search</div>
+    </a>
+  </div>
+
+  <footer class="footer" style="margin-top:2rem">
+    <div class="footer-brand">⬡ <span>GraphAlgo</span></div>
+    <p>Chauhan Jayvirsinh · Enro: 240503030003 · DAA Active Learning Activity</p>
+    <p class="footer-made">Made with IBM Bob</p>
+  </footer>
+</main>
+</div>
+
+<script src="graph-visualizer.js"></script>
+<script src="nav.js"></script>
+</body>
+</html>

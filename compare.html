@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>GraphAlgo — Compare &amp; Analysis</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    /* Complexity chart canvas */
+    #complexityChart { width:100%!important; height:260px!important; display:block }
+    /* Summary compare cards */
+    .cmp-hero { text-align:center; padding:1.8rem 1.2rem }
+    .cmp-algo-name { font-size:2rem; font-weight:900; margin-bottom:.3rem }
+    .cmp-full-name { font-size:.75rem; color:var(--text-muted); margin-bottom:1.1rem }
+    .cmp-stat { margin-bottom:.5rem }
+    .cmp-stat .sl { font-size:.62rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); display:block; margin-bottom:.18rem }
+    .cmp-stat .sv { font-family:var(--mono); font-size:.9rem; font-weight:700; color:var(--text) }
+    .cmp-use { margin-top:1rem; font-size:.8rem; color:var(--text-sub); padding-top:.9rem; border-top:1px solid rgba(139,92,246,.1) }
+    /* applications grid */
+    .app-card { background:var(--white); border:1.5px solid var(--glass-border); border-radius:var(--r-md); padding:1.5rem; box-shadow:0 4px 16px var(--shadow); position:relative; overflow:hidden; transition:all var(--tr) }
+    .app-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--grad-pink); opacity:0; transition:opacity var(--tr) }
+    .app-card:hover { transform:translateY(-5px); box-shadow:0 12px 32px var(--shadow-md) }
+    .app-card:hover::before { opacity:1 }
+    .app-icon { font-size:1.9rem; margin-bottom:.7rem }
+    .app-card h3 { font-size:.95rem; font-weight:800; color:var(--text); margin-bottom:.4rem }
+    .app-card p  { font-size:.82rem; color:var(--text-sub); line-height:1.7; margin-bottom:.8rem }
+    .app-tag { display:inline-block; padding:.18rem .55rem; border-radius:5px; font-size:.65rem; font-weight:700; background:var(--pink-bg); color:var(--pink) }
+  </style>
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle"><span></span><span></span><span></span></button>
+<div class="app-wrapper">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-icon">⬡</div>
+    <div><div class="sidebar-brand-name">GraphAlgo<span class="sidebar-brand-dot">.</span></div></div>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar">CJ</div>
+    <div>
+      <div class="sidebar-user-name">Chauhan Jayvirsinh</div>
+      <div class="sidebar-user-role">Enro · 240503030003</div>
+    </div>
+  </div>
+  <div class="sidebar-nav-label">Pages</div>
+  <ul class="sidebar-nav">
+    <li><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
+    <li><a href="graphs.html"><span class="nav-icon">📖</span> Graph Types</a></li>
+    <li><a href="bfs.html"><span class="nav-icon">🔵</span> BFS</a></li>
+    <li><a href="dfs.html"><span class="nav-icon">🟣</span> DFS</a></li>
+    <li><a href="dijkstra.html"><span class="nav-icon">🔷</span> Dijkstra's</a></li>
+    <li class="active"><a href="compare.html"><span class="nav-icon">📊</span> Compare</a></li>
+  </ul>
+  <div class="sidebar-nav-label">On this page</div>
+  <ul class="sidebar-nav">
+    <li><a href="#summary"><span class="nav-icon">⚡</span> Quick Summary</a></li>
+    <li><a href="#table"><span class="nav-icon">📋</span> Complexity Table</a></li>
+    <li><a href="#chart"><span class="nav-icon">📈</span> Growth Chart</a></li>
+    <li><a href="#decision"><span class="nav-icon">🗺️</span> Decision Guide</a></li>
+    <li><a href="#applications"><span class="nav-icon">🌍</span> Applications</a></li>
+    <li><a href="#research"><span class="nav-icon">🔬</span> Research Trends</a></li>
+    <li><a href="#conclusion"><span class="nav-icon">📝</span> Conclusion</a></li>
+  </ul>
+  <div class="sidebar-footer">
+    <div class="sf-emoji">📊</div>
+    <div class="sf-title">Compare &amp; Analysis</div>
+    <div class="sf-sub">All Three Algorithms</div>
+  </div>
+</aside>
+
+<main class="main-content">
+
+  <div class="page-header reveal">
+    <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><span>Compare &amp; Analysis</span></div>
+    <div class="page-badge badge-green">📊 Section 2.4</div>
+    <h1 class="page-title">Complexity &amp; Comparison</h1>
+    <p class="page-subtitle">Side-by-side comparison of BFS, DFS, and Dijkstra — complexity analysis, growth rate charts, decision guide, and real-world applications.</p>
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <section id="summary" class="section">
+    <div class="section-label reveal">Quick Summary</div>
+    <h2 class="section-title reveal">All Three Algorithms at a Glance</h2>
+    <div class="grid-3 reveal stagger">
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="background:linear-gradient(135deg,rgba(219,234,254,.6),rgba(191,219,254,.4));padding:.9rem 1.2rem;border-bottom:1.5px solid rgba(59,130,246,.12)">
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#1d4ed8;margin-bottom:.2rem">Algorithm 1</div>
+          <div style="font-size:1.1rem;font-weight:900;color:#1e1b4b">Breadth-First Search</div>
+        </div>
+        <div class="cmp-hero">
+          <div class="cmp-stat"><span class="sl">Time Complexity</span><span class="sv" style="color:var(--pink)">O(V + E)</span></div>
+          <div class="cmp-stat"><span class="sl">Space Complexity</span><span class="sv" style="color:var(--purple)">O(V)</span></div>
+          <div class="cmp-stat"><span class="sl">Data Structure</span><span class="sv">FIFO Queue</span></div>
+          <div class="cmp-stat"><span class="sl">Edge Weights</span><span class="sv">Unweighted only</span></div>
+          <div class="cmp-use">Best for: <strong>Shortest path (unweighted), social network distance, web crawlers, level-order traversal</strong></div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="background:linear-gradient(135deg,rgba(237,233,254,.6),rgba(221,214,254,.4));padding:.9rem 1.2rem;border-bottom:1.5px solid rgba(139,92,246,.12)">
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--purple);margin-bottom:.2rem">Algorithm 2</div>
+          <div style="font-size:1.1rem;font-weight:900;color:#1e1b4b">Depth-First Search</div>
+        </div>
+        <div class="cmp-hero">
+          <div class="cmp-stat"><span class="sl">Time Complexity</span><span class="sv" style="color:var(--pink)">O(V + E)</span></div>
+          <div class="cmp-stat"><span class="sl">Space Complexity</span><span class="sv" style="color:var(--purple)">O(V)</span></div>
+          <div class="cmp-stat"><span class="sl">Data Structure</span><span class="sv">LIFO Stack</span></div>
+          <div class="cmp-stat"><span class="sl">Edge Weights</span><span class="sv">Unweighted/directed</span></div>
+          <div class="cmp-use">Best for: <strong>Cycle detection, topological sort, maze solving, strongly connected components</strong></div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="background:linear-gradient(135deg,rgba(207,250,254,.6),rgba(165,243,252,.4));padding:.9rem 1.2rem;border-bottom:1.5px solid rgba(6,182,212,.12)">
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin-bottom:.2rem">Algorithm 3</div>
+          <div style="font-size:1.1rem;font-weight:900;color:#1e1b4b">Dijkstra's Algorithm</div>
+        </div>
+        <div class="cmp-hero">
+          <div class="cmp-stat"><span class="sl">Time Complexity</span><span class="sv" style="color:var(--cyan)">O((V+E) log V)</span></div>
+          <div class="cmp-stat"><span class="sl">Space Complexity</span><span class="sv" style="color:var(--purple)">O(V)</span></div>
+          <div class="cmp-stat"><span class="sl">Data Structure</span><span class="sv">Min-Priority Queue</span></div>
+          <div class="cmp-stat"><span class="sl">Edge Weights</span><span class="sv">Non-negative only</span></div>
+          <div class="cmp-use">Best for: <strong>GPS routing, network protocols, flight paths, any weighted shortest-path problem</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FULL COMPARISON TABLE -->
+  <section id="table" class="section">
+    <div class="section-label reveal">2.4 Analysis</div>
+    <h2 class="section-title reveal">Complexity Comparison Table</h2>
+    <div class="table-wrap reveal">
+      <table>
+        <thead>
+          <tr><th>Property</th><th>BFS</th><th>DFS</th><th>Dijkstra's</th></tr>
+        </thead>
+        <tbody>
+          <tr class="td-blue"><td><strong>Time Complexity</strong></td><td><code>O(V + E)</code></td><td><code>O(V + E)</code></td><td><code>O((V+E) log V)</code></td></tr>
+          <tr><td><strong>Space Complexity</strong></td><td><code>O(V)</code></td><td><code>O(V)</code></td><td><code>O(V)</code></td></tr>
+          <tr class="td-blue"><td><strong>Primary Data Structure</strong></td><td>FIFO Queue</td><td>LIFO Stack / Recursion</td><td>Min-Priority Queue</td></tr>
+          <tr><td><strong>Graph Type</strong></td><td>Unweighted</td><td>Unweighted / Directed</td><td>Weighted (non-negative)</td></tr>
+          <tr class="td-blue"><td><strong>Shortest Path?</strong></td><td>✅ Yes (unweighted)</td><td>❌ No</td><td>✅ Yes (weighted)</td></tr>
+          <tr><td><strong>Negative Weights?</strong></td><td>N/A</td><td>N/A</td><td>❌ Fails</td></tr>
+          <tr class="td-blue"><td><strong>Topological Sort?</strong></td><td>❌ No</td><td>✅ Yes (post-order)</td><td>❌ No</td></tr>
+          <tr><td><strong>Cycle Detection?</strong></td><td>Possible</td><td>✅ Natural / Easy</td><td>Possible</td></tr>
+          <tr class="td-blue"><td><strong>Memory on Wide Graphs</strong></td><td>High (full frontier)</td><td>Low (single path)</td><td>High (heap entries)</td></tr>
+          <tr><td><strong>Memory on Deep Graphs</strong></td><td>Low</td><td>High (deep stack)</td><td>Medium</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- GROWTH CHART -->
+  <section id="chart" class="section">
+    <div class="section-label reveal">Visualisation</div>
+    <h2 class="section-title reveal">Growth Rate Comparison</h2>
+    <p class="section-sub reveal">How the number of operations grows as the number of nodes increases. Animates on scroll.</p>
+    <div class="card-glow reveal" style="padding:1.5rem">
+      <canvas id="complexityChart"></canvas>
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:1.2rem;margin-top:1rem">
+        <span style="display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;color:#6366f1;font-weight:600"><span style="width:18px;height:3px;background:#6366f1;border-radius:2px;display:inline-block"></span> O(V+E) — BFS/DFS</span>
+        <span style="display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;color:#06b6d4;font-weight:600"><span style="width:18px;height:3px;background:#06b6d4;border-radius:2px;display:inline-block"></span> O((V+E)logV) — Dijkstra</span>
+        <span style="display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;color:#f43f8e;font-weight:600"><span style="width:18px;height:3px;background:#f43f8e;border-radius:2px;display:inline-block"></span> O(V²) — Naïve Dijkstra</span>
+      </div>
+      <p style="text-align:center;font-size:.68rem;color:var(--text-muted);margin-top:.5rem">Hover over the card for animated glow border · Chart animates on scroll</p>
+    </div>
+  </section>
+
+  <!-- DECISION GUIDE -->
+  <section id="decision" class="section">
+    <div class="section-label reveal">Decision Guide</div>
+    <h2 class="section-title reveal">Which Algorithm to Choose?</h2>
+    <div class="grid-3 reveal">
+      <div class="callout callout-blue" style="flex-direction:column;align-items:flex-start">
+        <div style="font-size:1.4rem;margin-bottom:.6rem">🔵</div>
+        <div>
+          <div class="callout-title">Use BFS when…</div>
+          <div class="callout-body">
+            ✅ All edges have equal (or no) weight<br>
+            ✅ You need the <strong>fewest hops</strong> between two nodes<br>
+            ✅ You need to find all nodes within k steps<br>
+            ✅ You're solving puzzles / shortest unweighted route<br>
+            ✅ Web crawling / social network distance
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-purple" style="flex-direction:column;align-items:flex-start">
+        <div style="font-size:1.4rem;margin-bottom:.6rem">🟣</div>
+        <div>
+          <div class="callout-title">Use DFS when…</div>
+          <div class="callout-body">
+            ✅ You need <strong>topological ordering</strong> of a DAG<br>
+            ✅ You need to <strong>detect cycles</strong><br>
+            ✅ Finding <strong>connected / strongly connected components</strong><br>
+            ✅ Maze solving, backtracking, constraint satisfaction<br>
+            ✅ Memory is tight (DFS uses less on wide graphs)
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-cyan" style="flex-direction:column;align-items:flex-start">
+        <div style="font-size:1.4rem;margin-bottom:.6rem">🔷</div>
+        <div>
+          <div class="callout-title">Use Dijkstra when…</div>
+          <div class="callout-body">
+            ✅ Edges have different costs / distances<br>
+            ✅ <strong>No negative weights</strong> exist<br>
+            ✅ GPS routing, network path cost<br>
+            ✅ You need the <strong>minimum-cost path</strong> from one source<br>
+            ✅ OSPF / BGP internet routing protocols
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APPLICATIONS -->
+  <section id="applications" class="section">
+    <div class="section-label reveal">3. Real-World Applications</div>
+    <h2 class="section-title reveal">Where Graph Algorithms are Used</h2>
+    <div class="grid-auto reveal stagger">
+      <div class="app-card">
+        <div class="app-icon">🗺️</div>
+        <h3>GPS Navigation</h3>
+        <p>Dijkstra's (and A*) compute optimal driving routes considering distance, speed limits, and live traffic. Google Maps, Waze, and Apple Maps all use weighted graph algorithms.</p>
+        <span class="app-tag">Dijkstra / A*</span>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">👥</div>
+        <h3>Social Networks</h3>
+        <p>LinkedIn and Facebook use BFS to compute degrees of separation and suggest "People You May Know" — BFS from each user outward through the friend graph.</p>
+        <span class="app-tag">BFS</span>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">🌐</div>
+        <h3>Web Crawlers</h3>
+        <p>Google's indexing system uses BFS to discover web pages — starting from seed URLs and following links level by level to ensure broad, systematic coverage.</p>
+        <span class="app-tag">BFS</span>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">📦</div>
+        <h3>Package Dependencies</h3>
+        <p>npm, pip, Maven use DFS-based topological sorting to resolve the correct build and install order for software packages with complex dependency chains.</p>
+        <span class="app-tag">DFS — Topo Sort</span>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">🔌</div>
+        <h3>Network Routing</h3>
+        <p>The OSPF internet routing protocol uses Dijkstra's to build shortest-path trees across router networks, directing data packets along optimal routes.</p>
+        <span class="app-tag">Dijkstra</span>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">🧬</div>
+        <h3>Bioinformatics</h3>
+        <p>Protein interaction networks, DNA sequencing graphs, and gene regulatory networks use BFS/DFS for structural analysis and pathway discovery.</p>
+        <span class="app-tag">BFS / DFS</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH TRENDS -->
+  <section id="research" class="section">
+    <div class="section-label reveal">4. Research Trends</div>
+    <h2 class="section-title reveal">Cutting-Edge Directions</h2>
+    <div class="grid-3 reveal">
+      <div class="card" style="border-top:3px solid var(--pink)">
+        <div style="font-size:1.5rem;margin-bottom:.6rem">⚡</div>
+        <h3 style="font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:.5rem">Dynamic Streaming Graphs</h3>
+        <p style="font-size:.83rem;color:var(--text-sub);line-height:1.8;margin-bottom:.8rem">Real-world graphs change constantly — financial transactions, social updates, sensor readings. Classical algorithms must restart from scratch after each change. Modern incremental algorithms maintain shortest paths in <code style="font-family:var(--mono);font-size:.8rem;background:var(--pink-bg);color:var(--pink);padding:.1rem .35rem;border-radius:4px">O(log V)</code> time per update, enabling real-time analytics.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.3rem"><span class="pill pill-pink">Real-time</span><span class="pill pill-orange">Apache Flink</span><span class="pill pill-pink">Incremental</span></div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--purple)">
+        <div style="font-size:1.5rem;margin-bottom:.6rem">🌐</div>
+        <h3 style="font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:.5rem">Distributed Graph Processing</h3>
+        <p style="font-size:.83rem;color:var(--text-sub);line-height:1.8;margin-bottom:.8rem">Web-scale graphs (Facebook: 3 billion nodes, Google: trillions of edges) cannot fit on a single machine. Apache Spark GraphX and Google Pregel partition graphs across server clusters using vertex-centric computation — each node "thinks" and communicates with its neighbours.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.3rem"><span class="pill pill-purple">Spark GraphX</span><span class="pill pill-blue">Pregel</span><span class="pill pill-purple">Big Data</span></div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--cyan)">
+        <div style="font-size:1.5rem;margin-bottom:.6rem">🧠</div>
+        <h3 style="font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:.5rem">Graph Neural Networks (GNNs)</h3>
+        <p style="font-size:.83rem;color:var(--text-sub);line-height:1.8;margin-bottom:.8rem">BFS-style message-passing meets deep learning in Graph Convolutional Networks (GCNs). Each node aggregates information from its neighbourhood — exactly like BFS level-by-level expansion. Applications: drug discovery, fraud detection, protein structure prediction, recommendation systems.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.3rem"><span class="pill pill-cyan">GCN</span><span class="pill pill-green">Drug Discovery</span><span class="pill pill-cyan">PyTorch Geo</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONCLUSION -->
+  <section id="conclusion" class="section">
+    <div class="section-label reveal">5. Conclusion</div>
+    <h2 class="section-title reveal">Summary &amp; Future Directions</h2>
+    <div class="card reveal" style="border-left:4px solid var(--purple)">
+      <p style="font-size:.95rem;color:var(--text-sub);line-height:1.95;margin-bottom:1rem">
+        Graph algorithms like <strong>BFS</strong>, <strong>DFS</strong>, and <strong>Dijkstra's</strong> form the bedrock of modern network engineering and computer science. Their elegance lies in simplicity — a few lines of code solving some of the most complex real-world problems: navigating the internet, routing GPS, detecting fraud, sequencing DNA.
+      </p>
+      <p style="font-size:.95rem;color:var(--text-sub);line-height:1.95;margin-bottom:1.4rem">
+        Ongoing research continuously adapts these classic algorithms — from <strong>distributed big data environments</strong> to <strong>machine-learning pipelines</strong> and quantum-accelerated graph computation. The core principles of BFS's frontier expansion and Dijkstra's greedy relaxation now power the message-passing layers of state-of-the-art Graph Neural Networks.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:.45rem">
+        <span class="pill pill-pink">BFS</span>
+        <span class="pill pill-purple">DFS</span>
+        <span class="pill pill-cyan">Dijkstra</span>
+        <span class="pill pill-green">GNNs</span>
+        <span class="pill pill-orange">Streaming</span>
+        <span class="pill pill-blue">Pregel</span>
+      </div>
+    </div>
+
+    <div class="grid-4 reveal" style="margin-top:1.5rem">
+      <div class="card-sm" style="text-align:center">
+        <div style="font-size:1.5rem;margin-bottom:.4rem">⚛️</div>
+        <h4 style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.3rem">Quantum Graphs</h4>
+        <p style="font-size:.77rem;color:var(--text-muted)">Quantum speedups for shortest path and network flow problems</p>
+      </div>
+      <div class="card-sm" style="text-align:center">
+        <div style="font-size:1.5rem;margin-bottom:.4rem">🧠</div>
+        <h4 style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.3rem">Neuromorphic</h4>
+        <p style="font-size:.77rem;color:var(--text-muted)">Brain-inspired hardware running graph algorithms near-zero energy</p>
+      </div>
+      <div class="card-sm" style="text-align:center">
+        <div style="font-size:1.5rem;margin-bottom:.4rem">🔄</div>
+        <h4 style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.3rem">Self-Healing Nets</h4>
+        <p style="font-size:.77rem;color:var(--text-muted)">Autonomous failure detection and real-time re-routing</p>
+      </div>
+      <div class="card-sm" style="text-align:center">
+        <div style="font-size:1.5rem;margin-bottom:.4rem">🌍</div>
+        <h4 style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.3rem">Geo-Distributed</h4>
+        <p style="font-size:.77rem;color:var(--text-muted)">Consistent graph computation across global data centres</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer reveal">
+    <div class="footer-brand">⬡ <span>GraphAlgo</span></div>
+    <p>Chauhan Jayvirsinh · Enro: 240503030003 · DAA Active Learning Activity</p>
+    <p class="footer-made">Made with IBM Bob</p>
+  </footer>
+</main>
+</div>
+
+<script src="nav.js"></script>
+<script>
+/* Complexity growth chart — drawn on this page only */
+(function(){
+  const canvas = document.getElementById('complexityChart');
+  if(!canvas) return;
+
+  const obs = new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){ obs.disconnect(); drawChart(); }
+  },{threshold:0.25});
+  obs.observe(canvas);
+
+  function drawChart(){
+    const W = canvas.width  = canvas.offsetWidth || 700;
+    const H = canvas.height = 260;
+    const ctx = canvas.getContext('2d');
+    const pad = {top:32,right:24,bottom:50,left:54};
+    const cw = W-pad.left-pad.right, ch = H-pad.top-pad.bottom;
+    const maxN=20, pts = Array.from({length:maxN},(_,i)=>i+1);
+
+    const series=[
+      {label:'O(V+E) — BFS/DFS',       color:'#6366f1', fn:n=>n*1.6},
+      {label:'O((V+E)logV) — Dijkstra', color:'#06b6d4', fn:n=>n*Math.log2(n+1)*0.9},
+      {label:'O(V²) — Naïve Dijkstra',  color:'#f43f8e', fn:n=>n*n*0.45},
+    ];
+
+    const allVals=series.flatMap(s=>pts.map(n=>s.fn(n)));
+    const maxVal=Math.max(...allVals);
+    const tx=n=>pad.left+((n-1)/(maxN-1))*cw;
+    const ty=v=>pad.top+ch-(v/maxVal)*ch;
+
+    function drawAxes(){
+      ctx.strokeStyle='rgba(139,92,246,0.07)'; ctx.lineWidth=1;
+      for(let i=0;i<=5;i++){
+        const y=pad.top+(ch/5)*i;
+        ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(pad.left+cw,y);ctx.stroke();
+      }
+      ctx.strokeStyle='rgba(107,114,128,0.3)'; ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.moveTo(pad.left,pad.top);ctx.lineTo(pad.left,pad.top+ch);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(pad.left,pad.top+ch);ctx.lineTo(pad.left+cw,pad.top+ch);ctx.stroke();
+      ctx.fillStyle='rgba(107,114,128,0.65)'; ctx.font='11px Inter,sans-serif'; ctx.textAlign='center';
+      ctx.fillText('Number of Nodes (n)',pad.left+cw/2,H-8);
+      ctx.save();ctx.translate(14,pad.top+ch/2);ctx.rotate(-Math.PI/2);ctx.fillText('Operations',0,0);ctx.restore();
+      [1,5,10,15,20].forEach(n=>{ctx.fillStyle='rgba(107,114,128,.55)';ctx.textAlign='center';ctx.fillText(n,tx(n),pad.top+ch+18);});
+    }
+
+    let t=0, frames=60;
+    function animate(){
+      t++;
+      const prog=1-Math.pow(1-(t/frames),3);
+      const vis=Math.floor(prog*(maxN-1))+1;
+      ctx.clearRect(0,0,W,H);
+      drawAxes();
+      series.forEach(s=>{
+        ctx.beginPath();
+        for(let i=0;i<vis;i++){const n=pts[i],x=tx(n),y=ty(s.fn(n));i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+        ctx.strokeStyle=s.color;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();
+        const last=pts[vis-1];
+        ctx.beginPath();ctx.arc(tx(last),ty(s.fn(last)),4,0,Math.PI*2);ctx.fillStyle=s.color;ctx.fill();
+      });
+      series.forEach((s,i)=>{
+        const lx=pad.left+i*(cw/series.length)+10, ly=pad.top-14;
+        ctx.fillStyle=s.color;ctx.fillRect(lx,ly-3,18,3);
+        ctx.fillStyle='rgba(30,27,75,0.65)';ctx.font='10px Inter,sans-serif';ctx.textAlign='left';
+        ctx.fillText(s.label,lx+22,ly);
+      });
+      if(t<frames) requestAnimationFrame(animate);
+    }
+    animate();
+  }
+})();
+</script>
+</body>
+</html>

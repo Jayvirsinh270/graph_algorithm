@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>GraphAlgo — Graph Types</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .gt-header{display:flex;align-items:center;gap:1rem;padding:1.1rem 1.6rem;border-radius:var(--r-md) var(--r-md) 0 0;border-bottom:1.5px solid rgba(139,92,246,.1)}
+    .gt-icon{width:42px;height:42px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:1.35rem;background:var(--white);box-shadow:0 2px 8px var(--shadow);flex-shrink:0}
+    .gt-title{font-size:1.05rem;font-weight:800;color:var(--text);margin-bottom:.25rem}
+    .gt-badge{display:inline-block;padding:.15rem .6rem;border-radius:100px;font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+    .gt-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+    @media(max-width:780px){.gt-body{grid-template-columns:1fr}}
+    .gt-left{padding:1.5rem;border-right:1px solid rgba(139,92,246,.08)}
+    .gt-right{padding:1.5rem;background:rgba(249,248,255,.4)}
+    @media(max-width:780px){.gt-left{border-right:none;border-bottom:1px solid rgba(139,92,246,.08)}.gt-right{background:none}}
+    .gt-desc{font-size:.88rem;color:var(--text-sub);line-height:1.85;margin-bottom:1.1rem}
+    .gt-desc strong{color:var(--text)}.gt-desc em{color:var(--purple);font-style:normal;font-weight:600}
+    .prop-list{list-style:none;padding:0;margin-bottom:1rem}
+    .prop-list li{display:flex;align-items:flex-start;gap:.5rem;font-size:.82rem;color:var(--text-sub);padding:.28rem 0;border-bottom:1px solid rgba(139,92,246,.05)}
+    .prop-list li:last-child{border-bottom:none}
+    .prop-dot{flex-shrink:0;font-size:.65rem;margin-top:.28rem}
+    .use-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.3rem}
+    .use-tag{padding:.18rem .58rem;border-radius:5px;font-size:.67rem;font-weight:600;background:var(--pink-bg);color:var(--pink);border:1px solid rgba(244,63,142,.15)}
+    .trav-box{margin-top:1rem}
+    .trav-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.5rem}
+    .trav-steps{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.7rem}
+    .trav-step{display:flex;align-items:flex-start;gap:.55rem;padding:.45rem .65rem;border-radius:var(--r-sm);font-size:.79rem;color:var(--text-sub);line-height:1.5;border:1px solid transparent;transition:all var(--tr)}
+    .trav-step:hover{border-color:rgba(139,92,246,.1);background:rgba(249,248,255,.9)}
+    .trav-step strong{color:var(--text)}
+    .ts-num{min-width:19px;height:19px;border-radius:50%;font-size:.62rem;font-weight:800;color:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:.06rem}
+    .ts-blue   .ts-num{background:linear-gradient(135deg,#3b82f6,#6366f1)}
+    .ts-blue  {background:rgba(219,234,254,.35);border-color:rgba(59,130,246,.1)}
+    .ts-purple .ts-num{background:var(--grad-pink)}
+    .ts-purple{background:rgba(237,233,254,.35);border-color:rgba(139,92,246,.1)}
+    .ts-cyan   .ts-num{background:linear-gradient(135deg,#06b6d4,#10b981)}
+    .ts-cyan  {background:rgba(207,250,254,.35);border-color:rgba(6,182,212,.1)}
+    .ts-green  .ts-num{background:linear-gradient(135deg,#10b981,#06b6d4)}
+    .ts-green {background:rgba(209,250,229,.35);border-color:rgba(16,185,129,.1)}
+    .ts-orange .ts-num{background:linear-gradient(135deg,#f59e0b,#f43f8e)}
+    .ts-orange{background:rgba(254,243,199,.35);border-color:rgba(245,158,11,.1)}
+    .trav-result{padding:.5rem .9rem;border-radius:var(--r-sm);background:rgba(244,63,142,.05);border:1px solid rgba(244,63,142,.18);font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--pink);text-align:center}
+    /* SVG */
+    .svg-wrap{background:var(--white);border:1px solid rgba(139,92,246,.1);border-radius:var(--r-sm);padding:.5rem;margin-bottom:1rem}
+    .svg-caption{text-align:center;font-size:.65rem;color:var(--text-muted);margin-top:.25rem;padding-bottom:.3rem}
+    /* adj comparison */
+    .adj-cmp{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem}
+    @media(max-width:420px){.adj-cmp{grid-template-columns:1fr}}
+    .adj-title{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.45rem}
+    .adj-list-box{background:rgba(249,248,255,.9);border:1px solid rgba(139,92,246,.1);border-radius:var(--r-sm);padding:.45rem .65rem}
+    .adj-row{display:flex;align-items:center;gap:.35rem;padding:.18rem 0;font-size:.76rem;font-family:var(--mono)}
+    .adj-node{font-weight:800;color:var(--purple);min-width:12px}
+    .adj-arr{color:var(--pink);font-weight:700}
+    .adj-nbr{color:var(--text-sub)}
+    .adj-note{font-size:.68rem;color:var(--purple);font-family:var(--mono);font-weight:600;text-align:center;margin-top:.45rem}
+    .mx{border-collapse:collapse;width:100%;font-size:.73rem;font-family:var(--mono)}
+    .mx th{padding:.22rem .32rem;text-align:center;font-size:.68rem;color:var(--text-muted)}
+    .mx td{padding:.22rem .32rem;text-align:center;border:1px solid rgba(139,92,246,.1)}
+    .mx .m1{background:rgba(139,92,246,.12);color:var(--purple);font-weight:700}
+    .mx .m0{background:rgba(249,248,255,.7);color:var(--text-muted)}
+    /* fact row */
+    .facts-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:2rem}
+    .fact{flex:1;min-width:110px;background:var(--white);border:1.5px solid var(--glass-border);border-radius:var(--r-md);padding:.8rem 1rem;text-align:center;box-shadow:0 3px 12px var(--shadow)}
+    .fact-num{font-size:1rem;font-weight:800;color:var(--purple);font-family:var(--mono);margin-bottom:.2rem}
+    .fact-lbl{font-size:.68rem;color:var(--text-muted);line-height:1.4}
+    /* color headers */
+    .hdr-blue  {background:linear-gradient(135deg,rgba(219,234,254,.6),rgba(191,219,254,.4));border-bottom-color:rgba(59,130,246,.12)}
+    .hdr-purple{background:linear-gradient(135deg,rgba(237,233,254,.6),rgba(221,214,254,.4));border-bottom-color:rgba(139,92,246,.12)}
+    .hdr-cyan  {background:linear-gradient(135deg,rgba(207,250,254,.6),rgba(165,243,252,.4));border-bottom-color:rgba(6,182,212,.12)}
+    .hdr-green {background:linear-gradient(135deg,rgba(209,250,229,.6),rgba(167,243,208,.4));border-bottom-color:rgba(16,185,129,.12)}
+    .hdr-orange{background:linear-gradient(135deg,rgba(254,243,199,.6),rgba(253,230,138,.4));border-bottom-color:rgba(245,158,11,.12)}
+  </style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle"><span></span><span></span><span></span></button>
+
+<div class="app-wrapper">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-icon">⬡</div>
+    <div><div class="sidebar-brand-name">GraphAlgo<span class="sidebar-brand-dot">.</span></div></div>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar">CJ</div>
+    <div>
+      <div class="sidebar-user-name">Chauhan Jayvirsinh</div>
+      <div class="sidebar-user-role">Enro · 240503030003</div>
+    </div>
+  </div>
+  <div class="sidebar-nav-label">Pages</div>
+  <ul class="sidebar-nav">
+    <li><a href="index.html"><span class="nav-icon">🏠</span> Home</a></li>
+    <li class="active"><a href="graphs.html"><span class="nav-icon">📖</span> Graph Types</a></li>
+    <li><a href="bfs.html"><span class="nav-icon">🔵</span> BFS</a></li>
+    <li><a href="dfs.html"><span class="nav-icon">🟣</span> DFS</a></li>
+    <li><a href="dijkstra.html"><span class="nav-icon">🔷</span> Dijkstra's</a></li>
+    <li><a href="compare.html"><span class="nav-icon">📊</span> Compare</a></li>
+  </ul>
+  <div class="sidebar-nav-label">On this page</div>
+  <ul class="sidebar-nav">
+    <li><a href="#intro"><span class="nav-icon">📌</span> Introduction</a></li>
+    <li><a href="#undirected"><span class="nav-icon">⬡</span> Undirected</a></li>
+    <li><a href="#directed"><span class="nav-icon">→</span> Directed</a></li>
+    <li><a href="#weighted"><span class="nav-icon">⚖</span> Weighted</a></li>
+    <li><a href="#cyclic"><span class="nav-icon">⊙</span> Cyclic / DAG</a></li>
+    <li><a href="#sparse"><span class="nav-icon">⚡</span> Sparse vs Dense</a></li>
+  </ul>
+  <div class="sidebar-footer">
+    <div class="sf-emoji">🎓</div>
+    <div class="sf-title">DAA Active Learning</div>
+    <div class="sf-sub">Graph Types Reference</div>
+  </div>
+</aside>
+
+<main class="main-content">
+
+  <!-- HEADER -->
+  <section id="intro" class="section">
+    <div class="page-header reveal">
+      <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><span>Graph Types</span></div>
+      <span class="page-badge badge-blue">📖 Introduction</span>
+      <h1 class="page-title">What is a Graph?</h1>
+      <p class="page-subtitle">Graphs model real-world connections. A graph <strong>G = (V, E)</strong> has <strong>vertices (V)</strong> — entities like cities or users — and <strong>edges (E)</strong> — connections between them. This page covers every major graph type with diagrams, analogies, and traversal examples.</p>
+    </div>
+
+    <!-- Quick facts -->
+    <div class="facts-row reveal">
+      <div class="fact"><div class="fact-num">G=(V,E)</div><div class="fact-lbl">Formal Definition</div></div>
+      <div class="fact"><div class="fact-num">Degree</div><div class="fact-lbl">Edges on a node</div></div>
+      <div class="fact"><div class="fact-num">Path</div><div class="fact-lbl">Sequence of nodes</div></div>
+      <div class="fact"><div class="fact-num">Cycle</div><div class="fact-lbl">Path back to start</div></div>
+      <div class="fact"><div class="fact-num">Tree</div><div class="fact-lbl">Connected, no cycles</div></div>
+      <div class="fact"><div class="fact-num">DAG</div><div class="fact-lbl">Directed, acyclic</div></div>
+    </div>
+  </section>
+
+  <!-- UNDIRECTED -->
+  <section id="undirected" class="section">
+    <div class="section-label reveal">Type 1</div>
+    <div class="card reveal" style="padding:0;overflow:hidden">
+      <div class="gt-header hdr-blue">
+        <div class="gt-icon">⬡</div>
+        <div>
+          <div class="gt-title">Undirected Graph</div>
+          <span class="gt-badge badge-blue">Bidirectional Edges</span>
+        </div>
+      </div>
+      <div class="gt-body">
+        <div class="gt-left">
+          <p class="gt-desc">In an <strong>undirected graph</strong>, every edge is a two-way street. If A connects to B, then B equally connects to A. There are <em>no arrows</em> — just plain lines.</p>
+          <div class="callout callout-blue">
+            <div class="callout-icon">🤝</div>
+            <div>
+              <div class="callout-title">Real-World Analogy</div>
+              <div class="callout-body"><strong>Facebook friendships.</strong> If Alice is friends with Bob, Bob is automatically friends with Alice. The connection is symmetric — it works both ways with no distinction.</div>
+            </div>
+          </div>
+          <div style="font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.5rem">Key Properties</div>
+          <ul class="prop-list">
+            <li><span class="prop-dot" style="color:#3b82f6">●</span> Edge (A, B) = Edge (B, A) — the same edge, no direction</li>
+            <li><span class="prop-dot" style="color:#3b82f6">●</span> Each node has a <em>degree</em> = number of edges attached to it</li>
+            <li><span class="prop-dot" style="color:#3b82f6">●</span> Sum of all degrees = 2 × |E| (Handshaking Lemma)</li>
+            <li><span class="prop-dot" style="color:#3b82f6">●</span> No arrowheads — drawn as plain lines between nodes</li>
+          </ul>
+          <div class="use-tags">
+            <span class="use-tag">Facebook / LinkedIn</span>
+            <span class="use-tag">Road Maps</span>
+            <span class="use-tag">Power Grids</span>
+            <span class="use-tag">Telephone Networks</span>
+          </div>
+        </div>
+        <div class="gt-right">
+          <div class="svg-wrap">
+            <svg viewBox="0 0 220 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+              <line x1="110" y1="30" x2="40" y2="100" stroke="#93c5fd" stroke-width="2"/>
+              <line x1="110" y1="30" x2="180" y2="100" stroke="#93c5fd" stroke-width="2"/>
+              <line x1="40" y1="100" x2="80" y2="160" stroke="#93c5fd" stroke-width="2"/>
+              <line x1="40" y1="100" x2="140" y2="160" stroke="#93c5fd" stroke-width="2"/>
+              <line x1="180" y1="100" x2="140" y2="160" stroke="#93c5fd" stroke-width="2"/>
+              <circle cx="110" cy="30" r="17" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="110" y="35" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">A</text>
+              <circle cx="40" cy="100" r="17" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="40" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">B</text>
+              <circle cx="180" cy="100" r="17" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="180" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">C</text>
+              <circle cx="80" cy="160" r="17" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="80" y="165" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">D</text>
+              <circle cx="140" cy="160" r="17" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/><text x="140" y="165" text-anchor="middle" font-size="12" font-weight="bold" fill="#1d4ed8">E</text>
+              <text x="62" y="56" text-anchor="middle" font-size="10" fill="#3b82f6">↔</text>
+            </svg>
+            <div class="svg-caption">5 nodes · 5 undirected edges · no arrowheads</div>
+          </div>
+          <div class="trav-box">
+            <div class="trav-label">BFS Traversal from A</div>
+            <div class="trav-steps">
+              <div class="trav-step ts-blue"><span class="ts-num">1</span><span>Start at <strong>A</strong>. Queue: [A]. Visited: {A}</span></div>
+              <div class="trav-step ts-blue"><span class="ts-num">2</span><span>Dequeue A → enqueue neighbours <strong>B, C</strong>. Queue: [B,C]</span></div>
+              <div class="trav-step ts-blue"><span class="ts-num">3</span><span>Dequeue B → enqueue <strong>D, E</strong>. Queue: [C,D,E]</span></div>
+              <div class="trav-step ts-blue"><span class="ts-num">4</span><span>Dequeue C → E already queued. Queue: [D,E]</span></div>
+              <div class="trav-step ts-blue"><span class="ts-num">5</span><span>Dequeue D, then E. Queue: [ ] — <strong>Done!</strong></span></div>
+            </div>
+            <div class="trav-result">BFS Order: A → B → C → D → E &nbsp;|&nbsp; Shortest A→E = 2 hops</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIRECTED -->
+  <section id="directed" class="section">
+    <div class="section-label reveal">Type 2</div>
+    <div class="card reveal" style="padding:0;overflow:hidden">
+      <div class="gt-header hdr-purple">
+        <div class="gt-icon">→</div>
+        <div>
+          <div class="gt-title">Directed Graph (Digraph)</div>
+          <span class="gt-badge badge-purple">One-Way Edges (Arrows)</span>
+        </div>
+      </div>
+      <div class="gt-body">
+        <div class="gt-left">
+          <p class="gt-desc">In a <strong>directed graph (digraph)</strong>, every edge is an <em>arrow</em> pointing from one node to another. A→B does <em>not</em> mean B→A.</p>
+          <div class="callout callout-purple">
+            <div class="callout-icon">🛣️</div>
+            <div>
+              <div class="callout-title">Real-World Analogy</div>
+              <div class="callout-body"><strong>One-way streets.</strong> A road from Town Hall → Station doesn't mean you can drive back the same way. Twitter follows work the same — you can follow someone without them following you back.</div>
+            </div>
+          </div>
+          <div style="font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.5rem">Key Properties</div>
+          <ul class="prop-list">
+            <li><span class="prop-dot" style="color:var(--purple)">●</span> <strong>In-degree:</strong> arrows pointing INTO a node</li>
+            <li><span class="prop-dot" style="color:var(--purple)">●</span> <strong>Out-degree:</strong> arrows pointing OUT of a node</li>
+            <li><span class="prop-dot" style="color:var(--purple)">●</span> Edge A→B ≠ Edge B→A — they are two different edges</li>
+            <li><span class="prop-dot" style="color:var(--purple)">●</span> Drawn with arrowheads on one end of each edge</li>
+          </ul>
+          <div class="use-tags">
+            <span class="use-tag">Web Page Links</span>
+            <span class="use-tag">Twitter Follows</span>
+            <span class="use-tag">Task Scheduling</span>
+            <span class="use-tag">Compiler Flow</span>
+          </div>
+        </div>
+        <div class="gt-right">
+          <div class="svg-wrap">
+            <svg viewBox="0 0 220 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+              <defs><marker id="arP" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#8b5cf6"/></marker></defs>
+              <line x1="110" y1="43" x2="52" y2="97" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arP)"/>
+              <line x1="110" y1="43" x2="166" y2="97" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arP)"/>
+              <line x1="52" y1="113" x2="88" y2="146" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arP)"/>
+              <line x1="166" y1="113" x2="132" y2="146" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arP)"/>
+              <line x1="130" y1="160" x2="96" y2="160" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arP)"/>
+              <circle cx="110" cy="30" r="17" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2"/><text x="110" y="35" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d28d9">A</text>
+              <circle cx="42" cy="107" r="17" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2"/><text x="42" y="112" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d28d9">B</text>
+              <circle cx="178" cy="107" r="17" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2"/><text x="178" y="112" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d28d9">C</text>
+              <circle cx="80" cy="158" r="17" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2"/><text x="80" y="163" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d28d9">D</text>
+              <circle cx="140" cy="158" r="17" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2"/><text x="140" y="163" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d28d9">E</text>
+            </svg>
+            <div class="svg-caption">5 nodes · 5 directed edges · arrowheads show direction</div>
+          </div>
+          <div class="trav-box">
+            <div class="trav-label">DFS Traversal from A</div>
+            <div class="trav-steps">
+              <div class="trav-step ts-purple"><span class="ts-num">1</span><span>Push <strong>A</strong> onto stack. Stack: [A]</span></div>
+              <div class="trav-step ts-purple"><span class="ts-num">2</span><span>Pop A, visit. Follow A→B (deeper). Stack: [C, B]</span></div>
+              <div class="trav-step ts-purple"><span class="ts-num">3</span><span>Pop B, visit. B→D. Stack: [C, D]</span></div>
+              <div class="trav-step ts-purple"><span class="ts-num">4</span><span>Pop D — no outgoing. Backtrack. Stack: [C]</span></div>
+              <div class="trav-step ts-purple"><span class="ts-num">5</span><span>Pop C → visit E. Stack: [ ] — <strong>Done!</strong></span></div>
+            </div>
+            <div class="trav-result" style="color:var(--purple);border-color:rgba(139,92,246,.2);background:rgba(139,92,246,.04)">DFS Order: A → B → D → C → E</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WEIGHTED -->
+  <section id="weighted" class="section">
+    <div class="section-label reveal">Type 3</div>
+    <div class="card reveal" style="padding:0;overflow:hidden">
+      <div class="gt-header hdr-cyan">
+        <div class="gt-icon">⚖</div>
+        <div>
+          <div class="gt-title">Weighted Graph</div>
+          <span class="gt-badge badge-cyan">Edges carry numeric costs</span>
+        </div>
+      </div>
+      <div class="gt-body">
+        <div class="gt-left">
+          <p class="gt-desc">A <strong>weighted graph</strong> assigns a <em>numeric value (weight)</em> to each edge — representing cost, distance, time, or bandwidth. The shortest path = minimum <em>total weight</em>, not fewest edges.</p>
+          <div class="callout callout-cyan">
+            <div class="callout-icon">🗺️</div>
+            <div>
+              <div class="callout-title">Real-World Analogy</div>
+              <div class="callout-body"><strong>Google Maps.</strong> Cities are nodes, roads are edges, and edge weights are driving times. You don't want the fewest roads — you want the fastest total journey. That's exactly what Dijkstra's algorithm computes.</div>
+            </div>
+          </div>
+          <div style="font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.5rem">Key Properties</div>
+          <ul class="prop-list">
+            <li><span class="prop-dot" style="color:var(--cyan)">●</span> Every edge has a number (weight / cost) written on it</li>
+            <li><span class="prop-dot" style="color:var(--cyan)">●</span> Shortest path = minimum <em>sum</em> of edge weights</li>
+            <li><span class="prop-dot" style="color:var(--cyan)">●</span> Can be directed or undirected</li>
+            <li><span class="prop-dot" style="color:var(--cyan)">●</span> Negative weights break Dijkstra — use Bellman-Ford instead</li>
+          </ul>
+          <div class="use-tags">
+            <span class="use-tag">GPS Navigation</span>
+            <span class="use-tag">Network Bandwidth</span>
+            <span class="use-tag">Flight Routes</span>
+            <span class="use-tag">Supply Chain</span>
+          </div>
+        </div>
+        <div class="gt-right">
+          <div class="svg-wrap">
+            <svg viewBox="0 0 220 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+              <defs><marker id="arC" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#06b6d4"/></marker></defs>
+              <line x1="28" y1="88" x2="104" y2="28" stroke="#67e8f9" stroke-width="2.5" marker-end="url(#arC)"/>
+              <line x1="28" y1="88" x2="104" y2="148" stroke="#22d3ee" stroke-width="3.5" marker-end="url(#arC)"/>
+              <line x1="122" y1="28" x2="186" y2="86" stroke="#67e8f9" stroke-width="2.5" marker-end="url(#arC)"/>
+              <line x1="122" y1="148" x2="186" y2="94" stroke="#a5f3fc" stroke-width="2" marker-end="url(#arC)"/>
+              <line x1="122" y1="148" x2="122" y2="44" stroke="#22d3ee" stroke-width="3" marker-end="url(#arC)"/>
+              <rect x="50" y="43" width="20" height="13" rx="3" fill="white" opacity=".92"/><text x="60" y="53" text-anchor="middle" font-size="10" font-weight="bold" fill="#0891b2">4</text>
+              <rect x="44" y="108" width="20" height="13" rx="3" fill="white" opacity=".92"/><text x="54" y="118" text-anchor="middle" font-size="10" font-weight="bold" fill="#0891b2">2</text>
+              <rect x="150" y="43" width="20" height="13" rx="3" fill="white" opacity=".92"/><text x="160" y="53" text-anchor="middle" font-size="10" font-weight="bold" fill="#0891b2">5</text>
+              <rect x="150" y="108" width="20" height="13" rx="3" fill="white" opacity=".92"/><text x="160" y="118" text-anchor="middle" font-size="10" font-weight="bold" fill="#0891b2">6</text>
+              <rect x="117" y="86" width="20" height="13" rx="3" fill="white" opacity=".92"/><text x="127" y="96" text-anchor="middle" font-size="10" font-weight="bold" fill="#0891b2">1</text>
+              <circle cx="18" cy="88" r="16" fill="#cffafe" stroke="#06b6d4" stroke-width="2"/><text x="18" y="93" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e7490">S</text>
+              <circle cx="113" cy="20" r="16" fill="#cffafe" stroke="#06b6d4" stroke-width="2"/><text x="113" y="25" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e7490">A</text>
+              <circle cx="113" cy="156" r="16" fill="#a5f3fc" stroke="#06b6d4" stroke-width="2.5"/><text x="113" y="161" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e7490">B</text>
+              <circle cx="198" cy="88" r="16" fill="#cffafe" stroke="#06b6d4" stroke-width="2"/><text x="198" y="93" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e7490">T</text>
+              <text x="110" y="173" text-anchor="middle" font-size="8.5" fill="#0891b2">Best: S→B→A→T = 2+1+5 = 8</text>
+            </svg>
+            <div class="svg-caption">Weights on edges · thick line = preferred (cheap) path</div>
+          </div>
+          <div class="trav-box">
+            <div class="trav-label">Dijkstra from S — step by step</div>
+            <div class="trav-steps">
+              <div class="trav-step ts-cyan"><span class="ts-num">1</span><span>Init: dist[S]=0, all others=∞. Push (0,S) to heap.</span></div>
+              <div class="trav-step ts-cyan"><span class="ts-num">2</span><span>Pop S. Relax S→A: dist[A]=4. Relax S→B: dist[B]=2.</span></div>
+              <div class="trav-step ts-cyan"><span class="ts-num">3</span><span>Pop B (min=2). B→A: 2+1=<strong>3 &lt; 4</strong> → update dist[A]=3.</span></div>
+              <div class="trav-step ts-cyan"><span class="ts-num">4</span><span>Pop A (min=3). A→T: 3+5=8 → dist[T]=8.</span></div>
+              <div class="trav-step ts-cyan"><span class="ts-num">5</span><span>Pop T (min=8). Settled. <strong>Done!</strong></span></div>
+            </div>
+            <div class="trav-result" style="color:var(--cyan);border-color:rgba(6,182,212,.2);background:rgba(6,182,212,.04)">S → B → A → T &nbsp;(cost = 8) &nbsp;— not the direct S→A→T (cost 9)!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CYCLIC vs ACYCLIC -->
+  <section id="cyclic" class="section">
+    <div class="section-label reveal">Type 4</div>
+    <div class="card reveal" style="padding:0;overflow:hidden">
+      <div class="gt-header hdr-green">
+        <div class="gt-icon">⊙</div>
+        <div>
+          <div class="gt-title">Cyclic vs Acyclic Graph</div>
+          <span class="gt-badge badge-green">Loops vs No Loops</span>
+        </div>
+      </div>
+      <div class="gt-body">
+        <div class="gt-left">
+          <p class="gt-desc">A <strong>cyclic graph</strong> has at least one <em>cycle</em> — a path from a node back to itself. An <strong>acyclic graph</strong> has no cycles. A <strong>DAG</strong> (Directed Acyclic Graph) is directed with no cycles — used for task ordering.</p>
+          <div class="callout callout-green">
+            <div class="callout-icon">🔄</div>
+            <div>
+              <div class="callout-title">Real-World Analogy</div>
+              <div class="callout-body"><strong>Cyclic:</strong> A circular bus route — you end up back at the starting stop. <strong>Acyclic (DAG):</strong> A family tree — parents always come before children, no going backwards in generations.</div>
+            </div>
+          </div>
+          <div style="font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.5rem">Key Properties</div>
+          <ul class="prop-list">
+            <li><span class="prop-dot" style="color:var(--green)">●</span> <strong>Cyclic:</strong> following edges can return you to the start node</li>
+            <li><span class="prop-dot" style="color:var(--green)">●</span> <strong>Acyclic:</strong> no path leads back to any visited node</li>
+            <li><span class="prop-dot" style="color:var(--green)">●</span> <strong>DAG:</strong> directed + acyclic → enables topological sorting</li>
+            <li><span class="prop-dot" style="color:var(--green)">●</span> DFS detects cycles using a "currently in stack" check</li>
+          </ul>
+          <div class="use-tags">
+            <span class="use-tag">Cyclic: Social Graphs</span>
+            <span class="use-tag">Cyclic: Circuit Boards</span>
+            <span class="use-tag">DAG: npm/pip deps</span>
+            <span class="use-tag">Tree: File System</span>
+          </div>
+        </div>
+        <div class="gt-right">
+          <div class="svg-wrap">
+            <svg viewBox="0 0 220 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+              <defs><marker id="arG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#10b981"/></marker></defs>
+              <!-- Cyclic left -->
+              <text x="48" y="13" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#059669">CYCLIC</text>
+              <line x1="48" y1="38" x2="20" y2="98" stroke="#6ee7b7" stroke-width="2" marker-end="url(#arG)"/>
+              <line x1="20" y1="112" x2="76" y2="112" stroke="#6ee7b7" stroke-width="2" marker-end="url(#arG)"/>
+              <line x1="78" y1="98" x2="52" y2="42" stroke="#34d399" stroke-width="2.2" marker-end="url(#arG)"/>
+              <circle cx="48" cy="28" r="13" fill="#d1fae5" stroke="#10b981" stroke-width="2"/><text x="48" y="33" text-anchor="middle" font-size="11" font-weight="bold" fill="#065f46">A</text>
+              <circle cx="14" cy="106" r="13" fill="#d1fae5" stroke="#10b981" stroke-width="2"/><text x="14" y="111" text-anchor="middle" font-size="11" font-weight="bold" fill="#065f46">B</text>
+              <circle cx="82" cy="106" r="13" fill="#d1fae5" stroke="#10b981" stroke-width="2"/><text x="82" y="111" text-anchor="middle" font-size="11" font-weight="bold" fill="#065f46">C</text>
+              <text x="48" y="138" text-anchor="middle" font-size="8" fill="#059669">A→B→C→A (cycle)</text>
+              <!-- divider -->
+              <line x1="110" y1="8" x2="110" y2="165" stroke="rgba(139,92,246,.15)" stroke-width="1" stroke-dasharray="4"/>
+              <!-- Acyclic right (DAG) -->
+              <text x="163" y="13" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#059669">ACYCLIC (DAG)</text>
+              <line x1="163" y1="38" x2="138" y2="88" stroke="#a7f3d0" stroke-width="2" marker-end="url(#arG)"/>
+              <line x1="163" y1="38" x2="188" y2="88" stroke="#a7f3d0" stroke-width="2" marker-end="url(#arG)"/>
+              <line x1="138" y1="102" x2="160" y2="134" stroke="#a7f3d0" stroke-width="2" marker-end="url(#arG)"/>
+              <line x1="188" y1="102" x2="166" y2="134" stroke="#a7f3d0" stroke-width="2" marker-end="url(#arG)"/>
+              <circle cx="163" cy="28" r="13" fill="#d1fae5" stroke="#10b981" stroke-width="2"/><text x="163" y="33" text-anchor="middle" font-size="11" font-weight="bold" fill="#065f46">A</text>
+              <circle cx="134" cy="98" r="13" fill="#d1fae5" stroke="#10b981" stroke-width="2"/><text x="134" y="103" text-anchor="middle" font-size="11" font-weight="bold" fill="#065f46">B</text>
+              <circle cx="192" cy="98" r="13" fill="#d1fae5" stroke="#10b981" stroke-width="2"/><text x="192" y="103" text-anchor="middle" font-size="11" font-weight="bold" fill="#065f46">C</text>
+              <circle cx="163" cy="146" r="13" fill="#d1fae5" stroke="#10b981" stroke-width="2"/><text x="163" y="151" text-anchor="middle" font-size="11" font-weight="bold" fill="#065f46">D</text>
+              <text x="163" y="166" text-anchor="middle" font-size="8" fill="#059669">No path back to A</text>
+            </svg>
+            <div class="svg-caption">Left: cyclic · Right: DAG — no path back to any node</div>
+          </div>
+          <div class="trav-box">
+            <div class="trav-label">DFS Cycle Detection (directed graph)</div>
+            <div class="trav-steps">
+              <div class="trav-step ts-green"><span class="ts-num">1</span><span>DFS from A. Mark A <em>visited</em> + <em>in-stack</em>.</span></div>
+              <div class="trav-step ts-green"><span class="ts-num">2</span><span>Go to B. Mark B in-stack. Stack: [A, B]</span></div>
+              <div class="trav-step ts-green"><span class="ts-num">3</span><span>Go to C. Mark C in-stack. Stack: [A, B, C]</span></div>
+              <div class="trav-step ts-green"><span class="ts-num">4</span><span>C's neighbour is A — A is already <strong>in-stack</strong>!</span></div>
+              <div class="trav-step ts-green" style="background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.2)"><span class="ts-num" style="background:linear-gradient(135deg,#ef4444,#f97316)">!</span><span style="color:#dc2626"><strong>Cycle detected!</strong> Back edge C→A found.</span></div>
+            </div>
+            <div class="trav-result" style="color:var(--green);border-color:rgba(16,185,129,.2);background:rgba(16,185,129,.04)">Cycle: A → B → C → A</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPARSE vs DENSE -->
+  <section id="sparse" class="section">
+    <div class="section-label reveal">Type 5</div>
+    <div class="card reveal" style="padding:0;overflow:hidden">
+      <div class="gt-header hdr-orange">
+        <div class="gt-icon">⚡</div>
+        <div>
+          <div class="gt-title">Sparse vs Dense Graph &amp; Representation</div>
+          <span class="gt-badge badge-orange">Edge Density + Data Structures</span>
+        </div>
+      </div>
+      <div class="gt-body">
+        <div class="gt-left">
+          <p class="gt-desc">Graph <strong>density</strong> = how many edges exist vs the maximum possible. This directly determines which <em>data structure</em> to store the graph in — adjacency list or adjacency matrix.</p>
+          <div class="callout callout-orange">
+            <div class="callout-icon">🏙️</div>
+            <div>
+              <div class="callout-title">Real-World Analogy</div>
+              <div class="callout-body"><strong>Village (sparse):</strong> few roads, most houses not directly connected. <strong>City centre (dense):</strong> every block connected to many others. Most real-world graphs (web, social) are surprisingly sparse.</div>
+            </div>
+          </div>
+          <div style="font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.5rem">Key Properties</div>
+          <ul class="prop-list">
+            <li><span class="prop-dot" style="color:var(--orange)">●</span> Max undirected edges = n(n−1)/2</li>
+            <li><span class="prop-dot" style="color:var(--orange)">●</span> <strong>Sparse:</strong> |E| ≈ |V| → use Adjacency List</li>
+            <li><span class="prop-dot" style="color:var(--orange)">●</span> <strong>Dense:</strong> |E| ≈ |V|² → use Adjacency Matrix</li>
+            <li><span class="prop-dot" style="color:var(--orange)">●</span> List: O(V+E) space · Matrix: O(V²) space</li>
+          </ul>
+        </div>
+        <div class="gt-right">
+          <div class="adj-cmp">
+            <div>
+              <div class="adj-title">Adjacency List (Sparse)</div>
+              <div class="adj-list-box">
+                <div class="adj-row"><span class="adj-node">A</span><span class="adj-arr">→</span><span class="adj-nbr">B, C</span></div>
+                <div class="adj-row"><span class="adj-node">B</span><span class="adj-arr">→</span><span class="adj-nbr">A, D</span></div>
+                <div class="adj-row"><span class="adj-node">C</span><span class="adj-arr">→</span><span class="adj-nbr">A, D</span></div>
+                <div class="adj-row"><span class="adj-node">D</span><span class="adj-arr">→</span><span class="adj-nbr">B, C</span></div>
+              </div>
+              <div class="adj-note">Space: O(V + E)</div>
+            </div>
+            <div>
+              <div class="adj-title">Adjacency Matrix (Dense)</div>
+              <table class="mx">
+                <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+                <tr><th>A</th><td class="m0">0</td><td class="m1">1</td><td class="m1">1</td><td class="m0">0</td></tr>
+                <tr><th>B</th><td class="m1">1</td><td class="m0">0</td><td class="m0">0</td><td class="m1">1</td></tr>
+                <tr><th>C</th><td class="m1">1</td><td class="m0">0</td><td class="m0">0</td><td class="m1">1</td></tr>
+                <tr><th>D</th><td class="m0">0</td><td class="m1">1</td><td class="m1">1</td><td class="m0">0</td></tr>
+              </table>
+              <div class="adj-note">Space: O(V²)</div>
+            </div>
+          </div>
+          <div class="trav-box" style="margin-top:.5rem">
+            <div class="trav-label">Which to choose?</div>
+            <div class="trav-steps">
+              <div class="trav-step ts-orange"><span class="ts-num">📋</span><span><strong>Adjacency List</strong> — BFS, DFS on social/web graphs. Most real-world algorithms use this.</span></div>
+              <div class="trav-step ts-orange"><span class="ts-num">📊</span><span><strong>Adjacency Matrix</strong> — Floyd-Warshall, dense graphs where O(1) edge lookup matters.</span></div>
+              <div class="trav-step ts-orange"><span class="ts-num">💡</span><span><strong>Rule:</strong> If |E| &lt; |V|², use a list. If almost every pair is connected, use a matrix.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Next page link -->
+  <div class="card reveal" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-top:1rem">
+    <div>
+      <div class="section-label">Next</div>
+      <h3 style="font-size:1.05rem;font-weight:800;color:var(--text)">Breadth-First Search (BFS)</h3>
+      <p style="font-size:.83rem;color:var(--text-sub)">Level-by-level traversal with interactive visualizer</p>
+    </div>
+    <a href="bfs.html" class="btn btn-pink">BFS →</a>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-brand">⬡ <span>GraphAlgo</span></div>
+    <p>Chauhan Jayvirsinh · Enro: 240503030003 · DAA Active Learning Activity</p>
+    <p class="footer-made">Made with IBM Bob</p>
+  </footer>
+</main>
+</div>
+
+<script src="nav.js"></script>
+</body>
+</html>
